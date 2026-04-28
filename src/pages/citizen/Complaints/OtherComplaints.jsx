@@ -1,0 +1,213 @@
+import { useState } from "react";
+import {
+  AlertTriangle,
+  MapPin,
+  FileText,
+  Upload,
+  Send,
+} from "lucide-react";
+
+const OtherComplaint = () => {
+  const [formData, setFormData] = useState({
+    subject: "",
+    location: "",
+    category: "",
+    priority: "",
+    description: "",
+    image: null,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log(formData);
+    alert("Complaint submitted successfully.");
+  };
+
+  return (
+    <section className="min-h-screen bg-[#f6f8f6] px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+            <AlertTriangle
+              size={26}
+              className="text-purple-700"
+            />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-green-800">
+              Other Complaint
+            </h1>
+
+            <p className="text-gray-500 mt-1">
+              Submit any Panchayat-related complaint not listed in other categories.
+            </p>
+          </div>
+        </div>
+
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          {/* Subject */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Complaint Subject
+            </label>
+
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              placeholder="Enter complaint subject"
+              className="w-full h-12 px-4 rounded-lg border border-gray-200 outline-none focus:border-green-700"
+            />
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Location
+            </label>
+
+            <div className="relative">
+              <MapPin
+                size={18}
+                className="absolute left-4 top-4 text-gray-400"
+              />
+
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Street / Area / Landmark"
+                className="w-full h-12 pl-11 pr-4 rounded-lg border border-gray-200 outline-none focus:border-green-700"
+              />
+            </div>
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Complaint Category
+            </label>
+
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full h-12 px-4 rounded-lg border border-gray-200 outline-none focus:border-green-700 bg-white"
+            >
+              <option value="">Select Category</option>
+              <option>Drainage</option>
+              <option>Noise Pollution</option>
+              <option>Stray Animals</option>
+              <option>Encroachment</option>
+              <option>Public Property Damage</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Priority Level
+            </label>
+
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="w-full h-12 px-4 rounded-lg border border-gray-200 outline-none focus:border-green-700 bg-white"
+            >
+              <option value="">Select Priority</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </div>
+
+          {/* Description */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
+
+            <div className="relative">
+              <FileText
+                size={18}
+                className="absolute left-4 top-4 text-gray-400"
+              />
+
+              <textarea
+                rows="5"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Describe the complaint clearly..."
+                className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 outline-none focus:border-green-700 resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Upload */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Upload Photo (Optional)
+            </label>
+
+            <label className="border border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-700 transition">
+              <Upload
+                size={24}
+                className="text-gray-400 mb-3"
+              />
+
+              <span className="text-gray-600 font-medium">
+                Click to upload image
+              </span>
+
+              <span className="text-sm text-gray-400 mt-1">
+                JPG, PNG up to 5MB
+              </span>
+
+              <input
+                type="file"
+                name="image"
+                onChange={handleChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Submit */}
+          <div className="md:col-span-2">
+            <button
+              type="submit"
+              className="h-12 px-8 rounded-lg bg-green-800 text-white font-semibold hover:bg-green-900 transition flex items-center gap-2"
+            >
+              Submit Complaint
+              <Send size={18} />
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  );
+};
+
+export default OtherComplaint;

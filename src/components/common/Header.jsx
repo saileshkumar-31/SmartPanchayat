@@ -2,18 +2,20 @@ import  { useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import logo from "../../assets/header/logo.png";
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About Us", path: "/aboutus" },
-    { name: "Services", path: "/services" },
-    { name: "Schemes", path: "/schemes" },
-    { name: "Contact Us", path: "/contact" },
+    { name: t("home"), path: "/" },
+    { name: t("about"), path: "/aboutus" },
+    { name: t("services"), path: "/services" },
+    { name: t("schemes"), path: "/schemes" },
+    { name: t("contact"), path: "/contact" },
   ];
 
   return (
@@ -63,10 +65,18 @@ const Header = () => {
 
         {/* Desktop Right Buttons */}
         <div className="hidden lg:flex items-center gap-3">
-          <button className="flex items-center gap-2 border border-green-700 bg-green-800 px-4 py-2 rounded-lg text-sm hover:bg-green-700">
-            <Globe size={16} />
-            English
-          </button>
+          <select
+  value={i18n.language}
+  onChange={(e) => {
+    const lang = e.target.value;
+    i18n.changeLanguage(lang);
+    localStorage.setItem("lang", lang);
+  }}
+  className="bg-transparent outline-none cursor-pointer"
+>
+  <option value="en">English</option>
+  <option value="ta">தமிழ்</option>
+</select>
 
           <button
             onClick={() => navigate("/citizen")}

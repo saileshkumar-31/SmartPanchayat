@@ -20,7 +20,7 @@ import Certificates from "../pages/citizen/services/certificate/Certificates.jsx
 import IncomeCertificate from "../pages/citizen/services/certificate/IncomeCertificate.jsx";
 
 import JobOpportunities from "../pages/citizen/services/JobOpportunities.jsx";
-import Complaints from "../pages/citizen/services/Complaints.jsx";
+
 import Meetings from "../pages/citizen/services/Meetings.jsx";
 import ContactUs from "../pages/public/ContactUs.jsx";
 import CivilServices from "../pages/citizen/services/CivilServices.jsx";
@@ -33,6 +33,17 @@ import Birthcertificate from "../pages/citizen/services/certificate/Birthcertifi
 import DeathCertificate from "../pages/citizen/services/certificate/Deathcertificate.jsx";
 import MarriageCertificate from "../pages/citizen/services/certificate/Marriageceretificate.jsx";
 import ApplicationTracker from "../pages/citizen/services/ApplicationTracker.jsx";
+import Complaints from "../pages/citizen/Complaints/Complaints.jsx";
+import Streetlight from "../pages/citizen/Complaints/Streetlight.jsx";
+
+import WaterSupply from "../pages/citizen/Complaints/WaterSupply.jsx";
+import Garbage from "../pages/citizen/Complaints/Garbage.jsx";
+import RoadDamage from "../pages/citizen/Complaints/RoadDamage.jsx";
+import PublicSafety from "../pages/citizen/Complaints/PublicSafety.jsx";
+import OtherComplaints from "../pages/citizen/Complaints/OtherComplaints.jsx";
+import ComplaintGuidelines from "../pages/citizen/Complaints/ComplaintGuidelines.jsx";
+import MyComplaints from "../pages/citizen/Complaints/MyComplaints.jsx";
+
 
 const Routes = createBrowserRouter([
   {
@@ -138,8 +149,40 @@ const Routes = createBrowserRouter([
         element: <JobOpportunities />,
       },
       {
-        path: "Complaints",
+        path: "complaints",
         element: <Complaints />,
+      },
+      {
+        path: "complaints/streetlight",
+        element: <Streetlight />,
+      },
+      {
+        path: "complaints/water-supply",
+        element: <WaterSupply />,
+      },
+      {
+        path: "complaints/garbage",
+        element: <Garbage />,
+      },
+      {
+        path: "complaints/road-damage",
+        element: <RoadDamage />,
+      },
+      {
+        path: "complaints/public-safety",
+        element: <PublicSafety />,
+      },
+      {
+        path: "complaints/other",
+        element: <OtherComplaints />,
+      },
+      {
+        path: "complaints/guidelines",
+        element: <ComplaintGuidelines />,
+      },
+      {
+        path: "complaints/my-complaints",
+        element: <MyComplaints />,
       },
       {
         path: "Meetings",

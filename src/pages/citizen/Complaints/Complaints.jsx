@@ -1,4 +1,4 @@
-import  { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Search,
   AlertTriangle,
@@ -8,58 +8,67 @@ import {
   Road,
   ShieldAlert,
   ArrowRight,
-  
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Complaints = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [search, setSearch] = useState("");
+  const [trackerId, setTrackerId] = useState("");
+  const [searchedId, setSearchedId] = useState("");
 
   const complaintTypes = [
     {
-      title: "Street Light Issue",
-      desc: "Report damaged or non-working street lights.",
+      title: t("streetLight"),
+      desc: t("streetLightDesc"),
       icon: Lightbulb,
       color: "text-yellow-700",
       bg: "bg-yellow-100",
+      path: "/complaints/streetlight",
     },
     {
-      title: "Water Supply Issue",
-      desc: "Low pressure, leakage or no water supply complaints.",
+      title: t("waterSupply"),
+      desc: t("waterSupplyDesc"),
       icon: Droplets,
       color: "text-blue-700",
       bg: "bg-blue-100",
+      path: "/complaints/water-supply",
     },
     {
-      title: "Garbage / Sanitation",
-      desc: "Waste collection delay or sanitation problems.",
+      title: t("garbage"),
+      desc: t("garbageDesc"),
       icon: Trash2,
       color: "text-green-700",
       bg: "bg-green-100",
+      path: "/complaints/garbage",
     },
     {
-      title: "Road Damage",
-      desc: "Potholes, broken roads or unsafe pathways.",
+      title: t("roadDamage"),
+      desc: t("roadDamageDesc"),
       icon: Road,
       color: "text-orange-700",
       bg: "bg-orange-100",
+      path: "/complaints/road-damage",
     },
     {
-      title: "Public Safety",
-      desc: "Dangerous locations or urgent civic risks.",
+      title: t("publicSafety"),
+      desc: t("publicSafetyDesc"),
       icon: ShieldAlert,
       color: "text-red-700",
       bg: "bg-red-100",
+      path: "/complaints/public-safety",
     },
     {
-      title: "Other Complaint",
-      desc: "Submit any other Panchayat-related grievance.",
+      title: t("otherComplaint"),
+      desc: t("otherComplaintDesc"),
       icon: AlertTriangle,
       color: "text-purple-700",
       bg: "bg-purple-100",
+      path: "/complaints/other",
     },
   ];
 
@@ -69,33 +78,9 @@ const Complaints = () => {
     );
   }, [search]);
 
-  const complaintHistory = [
-    {
-      id: "CMP1025",
-      issue: "Street Light Issue",
-      date: "22 Apr 2026",
-      status: "In Progress",
-    },
-    {
-      id: "CMP1018",
-      issue: "Water Supply Issue",
-      date: "18 Apr 2026",
-      status: "Resolved",
-    },
-    {
-      id: "CMP1009",
-      issue: "Garbage / Sanitation",
-      date: "10 Apr 2026",
-      status: "Pending",
-    },
-  ];
-
-  const getStatusStyle = (status) => {
-    if (status === "Resolved")
-      return "bg-green-100 text-green-700";
-    if (status === "In Progress")
-      return "bg-blue-100 text-blue-700";
-    return "bg-orange-100 text-orange-700";
+  const handleTrackerSearch = () => {
+    if (!trackerId.trim()) return;
+    setSearchedId(trackerId.toUpperCase());
   };
 
   return (
@@ -111,11 +96,11 @@ const Complaints = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-green-800 mb-2">
-            Complaints & Grievances
+            {t("complaintsTitle")}
           </h1>
 
           <p className="text-gray-600 text-lg">
-            Raise civic complaints online and track resolution status easily.
+            {t("complaintsSubtitle")}
           </p>
         </div>
 
@@ -143,7 +128,7 @@ const Complaints = () => {
 
         {/* Complaint Cards */}
         <h2 className="text-2xl font-bold text-green-800 mb-6">
-          Raise a Complaint
+          {t("raiseComplaint")}
         </h2>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -158,10 +143,7 @@ const Complaints = () => {
                 <div
                   className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 ${item.bg}`}
                 >
-                  <Icon
-                    size={24}
-                    className={item.color}
-                  />
+                  <Icon size={24} className={item.color} />
                 </div>
 
                 <h3 className="text-xl font-bold text-gray-800 mb-3">
@@ -172,8 +154,11 @@ const Complaints = () => {
                   {item.desc}
                 </p>
 
-                <button className="text-green-700 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-                  Submit Complaint
+                <button
+                  onClick={() => navigate(item.path)}
+                  className="text-green-700 font-semibold flex items-center gap-2 hover:gap-3 transition-all"
+                >
+                  {t("raiseComplaint")}
                   <ArrowRight size={18} />
                 </button>
               </div>
@@ -186,61 +171,69 @@ const Complaints = () => {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
             <div>
               <h3 className="text-2xl font-bold text-green-800 mb-2">
-                Complaint Tracker
+                {t("complaintTracker")}
               </h3>
 
               <p className="text-gray-500">
-                Monitor the progress of submitted complaints.
+                {t("trackerDescription")}
               </p>
             </div>
 
             <button
-              onClick={() => navigate("/application-status")}
+              onClick={() => navigate("/complaints/my-complaints")}
               className="h-11 px-6 rounded-lg bg-green-800 text-white font-semibold hover:bg-green-900 transition"
             >
-              View All
+              {t("viewAll")}
             </button>
           </div>
 
-          <div className="space-y-4">
-            {complaintHistory.map((item, index) => (
-              <div
-                key={index}
-                className="border border-gray-100 rounded-xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-              >
-                <div>
-                  <p className="font-bold text-gray-800">
-                    {item.id}
-                  </p>
+          {/* Search Tracker ID */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <input
+              type="text"
+              placeholder={t("enterComplaintId")}
+              value={trackerId}
+              onChange={(e) => setTrackerId(e.target.value)}
+              className="flex-1 h-12 px-4 rounded-lg border border-gray-200 outline-none focus:border-green-700"
+            />
 
-                  <p className="text-gray-600 mt-1">
-                    {item.issue}
-                  </p>
-
-                  <p className="text-sm text-gray-400 mt-1">
-                    Submitted: {item.date}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(
-                      item.status
-                    )}`}
-                  >
-                    {item.status}
-                  </span>
-
-                  <button className="text-green-700 font-semibold text-sm">
-                    Details
-                  </button>
-                </div>
-              </div>
-            ))}
+            <button
+              onClick={handleTrackerSearch}
+              className="h-12 px-8 rounded-lg bg-green-800 text-white font-semibold hover:bg-green-900 transition"
+            >
+              {t("track")}
+            </button>
           </div>
+
+          {/* Result */}
+          {searchedId ? (
+            <div className="border border-gray-100 rounded-xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div>
+                <p className="font-bold text-gray-800">
+                  {searchedId}
+                </p>
+
+                <p className="text-gray-600 mt-1">
+                  {t("complaintStatus")}
+                </p>
+
+                <p className="text-sm text-gray-400 mt-1">
+                  {t("lastUpdated")}: Today
+                </p>
+              </div>
+
+              <span className="px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                {t("inProgress")}
+              </span>
+            </div>
+          ) : (
+            <div className="border border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400">
+              {t("enterComplaintId")}
+            </div>
+          )}
         </div>
 
-        {/* Info Bar */}
+        {/* Guidelines */}
         <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col lg:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-green-800 text-white flex items-center justify-center">
@@ -249,17 +242,20 @@ const Complaints = () => {
 
             <div>
               <h4 className="text-xl font-bold text-green-800">
-                Complaint Guidelines
+                {t("complaintGuidelines")}
               </h4>
 
               <p className="text-gray-600">
-                Provide accurate details and location for faster resolution.
+                {t("guidelinesDescription")}
               </p>
             </div>
           </div>
 
-          <button className="h-11 px-6 rounded-lg border border-green-800 text-green-800 font-semibold hover:bg-green-800 hover:text-white transition">
-            Read Guidelines
+          <button
+            onClick={() => navigate("/complaints/complaint-guidelines")}
+            className="h-11 px-6 rounded-lg border border-green-800 text-green-800 font-semibold hover:bg-green-800 hover:text-white transition"
+          >
+            {t("readGuidelines")}
           </button>
         </div>
       </div>
