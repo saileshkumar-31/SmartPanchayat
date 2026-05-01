@@ -21,10 +21,10 @@ import IncomeCertificate from "../pages/citizen/services/certificate/IncomeCerti
 
 import JobOpportunities from "../pages/citizen/services/JobOpportunities.jsx";
 
-import Meetings from "../pages/citizen/services/Meetings.jsx";
+import Meetings from "../pages/citizen/services/meetings/Meetings.jsx";
 import ContactUs from "../pages/public/ContactUs.jsx";
-import CivilServices from "../pages/citizen/services/CivilServices.jsx";
-import Transparency from "../pages/citizen/services/Transparency.jsx";
+import CivilServices from "../pages/citizen/services/civilservices/CivilServices.jsx";
+
 import CommunityCertificate from "../pages/citizen/services/certificate/Communitycertificate.jsx";
 import NativityCertificate from "../pages/citizen/services/certificate/Navtivitycertificate.jsx";
 import ResidenceCertificate from "../pages/citizen/services/certificate/Residencecertificate.jsx";
@@ -35,7 +35,7 @@ import MarriageCertificate from "../pages/citizen/services/certificate/Marriagec
 import ApplicationTracker from "../pages/citizen/services/ApplicationTracker.jsx";
 import Complaints from "../pages/citizen/Complaints/Complaints.jsx";
 import Streetlight from "../pages/citizen/Complaints/Streetlight.jsx";
-
+import Transparency from "../pages/citizen/services/Transparency.jsx";
 import WaterSupply from "../pages/citizen/Complaints/WaterSupply.jsx";
 import Garbage from "../pages/citizen/Complaints/Garbage.jsx";
 import RoadDamage from "../pages/citizen/Complaints/RoadDamage.jsx";
@@ -43,6 +43,13 @@ import PublicSafety from "../pages/citizen/Complaints/PublicSafety.jsx";
 import OtherComplaints from "../pages/citizen/Complaints/OtherComplaints.jsx";
 import ComplaintGuidelines from "../pages/citizen/Complaints/ComplaintGuidelines.jsx";
 import MyComplaints from "../pages/citizen/Complaints/MyComplaints.jsx";
+import WaterConnection from "../pages/citizen/services/civilservices/WaterConnection.jsx";
+import PropertyTax from "../pages/citizen/services/civilservices/PropertyTax.jsx";
+import WasteCollection from "../pages/citizen/services/civilservices/WasteCollection.jsx";
+import BuildingPermission from "../pages/citizen/services/civilservices/BuildingPermission.jsx";
+import TradeLicense from "../pages/citizen/services/civilservices/TradeLicense.jsx";
+import NoObjection from "../pages/citizen/services/civilservices/NoObjection.jsx";
+
 
 
 const Routes = createBrowserRouter([
@@ -186,11 +193,35 @@ const Routes = createBrowserRouter([
       },
       {
         path: "Meetings",
-        element: <Meetings />,
+        element: <Meetings/>,
       },
       {
         path: "civilservices",
         element: <CivilServices />,
+      },
+      {
+        path: "waterconnection",
+        element: <WaterConnection />,
+      },
+      {
+        path: "propertytax",
+        element: <PropertyTax />,
+      },
+      {
+        path: "wastecollection",
+        element: <WasteCollection />,
+      },
+      {
+        path: "buildingpermission",
+        element: <BuildingPermission />,
+      },
+      {
+        path: "tradelicense",
+        element: <TradeLicense />,
+      },
+      {
+        path: "NoObjectionCertificate",
+        element: <NoObjection />,
       },
       {
         path: "transparency",

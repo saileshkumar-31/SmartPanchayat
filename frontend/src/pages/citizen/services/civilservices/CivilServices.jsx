@@ -22,9 +22,9 @@ const CivilServices = () => {
       title: "Water Connection Request",
       desc: "Apply for a new domestic or commercial water connection.",
       icon: Droplets,
-      color: "text-blue-700",
-      bg: "bg-blue-100",
-      route: "/citizen/services/civil-tracker",
+      color: "text-green-700",
+      bg: "bg-green-100",
+      route: "/waterconnection",
     },
     {
       title: "Property Tax Information",
@@ -32,7 +32,7 @@ const CivilServices = () => {
       icon: Home,
       color: "text-orange-700",
       bg: "bg-orange-100",
-      route: "/citizen/services/civil-tracker",
+      route: "/propertytax",
     },
     {
       title: "Waste Collection Request",
@@ -40,7 +40,7 @@ const CivilServices = () => {
       icon: Trash2,
       color: "text-green-700",
       bg: "bg-green-100",
-      route: "/citizen/services/civil-tracker",
+      route: "/wastecollection",
     },
     {
       title: "Building Permission",
@@ -48,7 +48,7 @@ const CivilServices = () => {
       icon: Building2,
       color: "text-red-700",
       bg: "bg-red-100",
-      route: "/citizen/services/civil-tracker",
+      route: "/buildingpermission",
     },
     {
       title: "Trade License",
@@ -56,7 +56,7 @@ const CivilServices = () => {
       icon: Store,
       color: "text-purple-700",
       bg: "bg-purple-100",
-      route: "/citizen/services/civil-tracker",
+      route: "/tradelicense",
     },
     {
       title: "No Objection Certificate",
@@ -64,15 +64,7 @@ const CivilServices = () => {
       icon: FileCheck,
       color: "text-indigo-700",
       bg: "bg-indigo-100",
-      route: "/citizen/services/civil-tracker",
-    },
-    {
-      title: "Other Civic Services",
-      desc: "Explore additional Panchayat civic services.",
-      icon: Landmark,
-      color: "text-emerald-700",
-      bg: "bg-emerald-100",
-      route: "/citizen/services/civil-tracker",
+      route: "/noobjectioncertificate",
     },
   ];
 
@@ -183,7 +175,7 @@ const CivilServices = () => {
 
           <button
             onClick={() =>
-              navigate("/citizen/services/civil-tracker")
+              navigate("/applicationtracker")
             }
             className="h-12 px-8 rounded-lg bg-green-800 text-white font-semibold hover:bg-green-900 transition flex items-center gap-2"
           >
