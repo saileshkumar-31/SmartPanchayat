@@ -35,7 +35,7 @@ import MarriageCertificate from "../pages/citizen/services/certificate/Marriagec
 import ApplicationTracker from "../pages/citizen/services/ApplicationTracker.jsx";
 import Complaints from "../pages/citizen/Complaints/Complaints.jsx";
 import Streetlight from "../pages/citizen/Complaints/Streetlight.jsx";
-import Transparency from "../pages/citizen/services/Transparency.jsx";
+import Transparency from "../pages/citizen/services/transparency/Transparency.jsx";
 import WaterSupply from "../pages/citizen/Complaints/WaterSupply.jsx";
 import Garbage from "../pages/citizen/Complaints/Garbage.jsx";
 import RoadDamage from "../pages/citizen/Complaints/RoadDamage.jsx";
@@ -49,6 +49,10 @@ import WasteCollection from "../pages/citizen/services/civilservices/WasteCollec
 import BuildingPermission from "../pages/citizen/services/civilservices/BuildingPermission.jsx";
 import TradeLicense from "../pages/citizen/services/civilservices/TradeLicense.jsx";
 import NoObjection from "../pages/citizen/services/civilservices/NoObjection.jsx";
+import Ongoing from "../pages/citizen/services/transparency/components/Ongoing.jsx";
+import Completed from "../pages/citizen/services/transparency/components/Completed.jsx";
+import Reports from "../pages/citizen/services/transparency/components/Reports.jsx";
+import Funds from "../pages/citizen/services/transparency/components/FundSourcesChart.jsx";
 
 
 
@@ -184,7 +188,7 @@ const Routes = createBrowserRouter([
         element: <OtherComplaints />,
       },
       {
-        path: "complaints/guidelines",
+        path: "complaints/complaint-guidelines",
         element: <ComplaintGuidelines />,
       },
       {
@@ -226,6 +230,22 @@ const Routes = createBrowserRouter([
       {
         path: "transparency",
         element: <Transparency />,
+      },
+      {
+        path: "transparency-ongoing",
+        element: <Ongoing />,
+      },
+      {
+        path: "transparency-completed",
+        element: <Completed />,
+      },
+      {
+        path: "transparency-reports",
+        element: <Reports />,
+      },
+      {
+        path: "transparency-funds",
+        element: <Funds />,
       },
       {
         path: "schemes",

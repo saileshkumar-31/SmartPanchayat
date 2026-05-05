@@ -12,10 +12,10 @@ const Header = () => {
 
   const navLinks = [
     { name: t("home"), path: "/" },
-    { name: t("about"), path: "/aboutus" },
     { name: t("services"), path: "/services" },
     { name: t("schemes"), path: "/schemes" },
     { name: t("contact"), path: "/contact" },
+    { name: t("about"), path: "/aboutus" },
   ];
 
   return (

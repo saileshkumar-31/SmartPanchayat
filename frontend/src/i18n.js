@@ -2,113 +2,209 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      translation: {
-        home: "Home",
-        about: "About Us",
-        services: "Services",
-        complaints: "Complaints",
-        contact: "Contact Us",
-        schemes: "Schemes",
+resources: {
+en: {
+translation: {
+// NAV
+home: "Home",
+about: "About Us",
+services: "Services",
+complaints: "Complaints",
+contact: "Contact Us",
+schemes: "Schemes",
 downloads: "Downloads",
-complaintsTitle: "Complaints & Grievances",
-complaintsSubtitle: "Raise civic complaints online and track resolution status easily.",
-raiseComplaint: "Raise a Complaint",
-streetLight: "Street Light Issue",
-streetLightDesc: "Report damaged or non-working street lights.",
 
-waterSupply: "Water Supply Issue",
-waterSupplyDesc: "Low pressure, leakage or no water supply complaints.",
 
-garbage: "Garbage / Sanitation",
-garbageDesc: "Waste collection delay or sanitation problems.",
+    // COMPLAINTS
+    complaintsTitle: "Complaints & Grievances",
+    complaintsSubtitle: "Raise civic complaints online and track resolution status easily.",
+    raiseComplaint: "Raise a Complaint",
+    submitComplaint: "Submit Complaint",
+    complaintTracker: "Complaint Tracker",
+    trackerSubtitle: "Search complaint status using your unique complaint ID.",
+    complaintStatus: "Complaint Status",
+    lastUpdated: "Last Updated",
+    complaintGuidelines: "Complaint Guidelines",
+    guidelinesDescription: "Provide accurate details and location for faster resolution.",
+    enterComplaintId: "Enter Complaint ID (Ex: CMP2026001)",
+    inProgress: "In Progress",
+    today: "Today",
 
-roadDamage: "Road Damage",
-roadDamageDesc: "Potholes, broken roads or unsafe pathways.",
+    // COMMON
+    search: "Search",
+    viewAll: "View All",
+    track: "Track",
 
-publicSafety: "Public Safety",
-publicSafetyDesc: "Dangerous locations or urgent civic risks.",
+    // MEETINGS PAGE
+    meetings_title: "Meetings & Participation",
+    meetings_subtitle: "Manage meetings, requests and public participation",
 
-otherComplaint: "Other Complaint",
-otherComplaintDesc: "Submit any other Panchayat-related grievance.",
-submitComplaint: "Submit Complaint",
-complaintTracker: "Complaint Tracker",
-trackerSubtitle: "Search complaint status using your unique complaint ID.",
-track: "Track",
-viewAll: "View All",
-readGuidelines: "Read Guidelines",
-trackerDescription: "Search complaint status using your unique complaint ID.",
-complaintStatus: "Complaint Status",
-lastUpdated: "Last Updated",
-guidelinesDescription: "Provide accurate details and location for faster resolution.",
-viewAll: "View All",
-track: "Track",
-search: "Search",
-enterComplaintId: "Enter Complaint ID (Ex: CMP2026001)",
-inProgress: "In Progress",
-today: "Today",
-complaintGuidelines: "Complaint Guidelines",
+    // TABS
+    scheduled: "Scheduled",
+    calendar: "Calendar",
+    request: "Request",
+    notices: "Notices",
+    summary: "Summary",
 
-      },
-    },
+    // STATS
+    upcoming: "Upcoming",
+    this_month: "This Month",
+    joinable: "Joinable",
+    requested: "Requested",
 
-    ta: {
-      translation: {
-        home: "முகப்பு",
-        about: "எங்களை பற்றி",
-        services: "சேவைகள்",
-        complaints: "புகார்கள்",
-        contact: "தொடர்பு கொள்ள",
-        schemes: "திட்டங்கள்",
-downloads: "பதிவிறக்கங்கள்",
-complaintsTitle: "புகார்கள் மற்றும் குறைகள்",
-complaintsSubtitle: "புகார்களை ஆன்லைனில் பதிவு செய்து நிலையை கண்காணிக்கவும்.",
-raiseComplaint: "புகார் அளிக்கவும்",
-streetLight: "தெரு விளக்கு பிரச்சனை",
-streetLightDesc: "சேதமடைந்த அல்லது வேலை செய்யாத தெரு விளக்குகளை புகாரளிக்கவும்.",
+    // TABLE
+    title: "Title",
+    date: "Date",
+    date_time: "Date & Time",
+    venue: "Venue",
+    type: "Type",
+    status: "Status",
+    action: "Action",
 
-waterSupply: "தண்ணீர் வழங்கல் பிரச்சனை",
-waterSupplyDesc: "குறைந்த அழுத்தம், கசிவு அல்லது தண்ணீர் வராத பிரச்சனை.",
+    // STATUS
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
+    upcoming_status: "Upcoming",
 
-garbage: "குப்பை / சுகாதாரம்",
-garbageDesc: "குப்பை அகற்ற தாமதம் அல்லது சுகாதார பிரச்சனைகள்.",
+    // BUTTONS
+    view: "View",
+    view_details: "View Details",
+    join: "Join",
+    submit: "Submit",
+    cancel: "Cancel",
+    submit_request: "Submit Request",
 
-roadDamage: "சாலை சேதம்",
-roadDamageDesc: "குழிகள், உடைந்த சாலை அல்லது பாதுகாப்பற்ற பாதைகள்.",
+    // REQUEST FORM
+    request_meeting: "Request Public Meeting",
+    meeting_title: "Meeting Title",
+    description: "Description",
+    preferred_date: "Preferred Date",
+    preferred_time: "Preferred Time",
+    preferred_venue: "Preferred Venue",
+    meeting_title_placeholder: "Enter meeting title",
+    description_placeholder: "Explain purpose of meeting",
+    venue_placeholder: "Enter venue (e.g., Panchayat Office Hall)",
 
-publicSafety: "பொது பாதுகாப்பு",
-publicSafetyDesc: "ஆபத்தான இடங்கள் அல்லது அவசர குடிமை அபாயங்கள்.",
+    // EMPTY STATES
+    no_meetings: "No scheduled meetings available",
+    no_requests: "No meeting requests found",
+    no_notices: "No notices available",
+    no_summary: "No meeting summary available",
 
-otherComplaint: "மற்ற புகார்",
-otherComplaintDesc: "வேறு எந்த ஊராட்சி தொடர்பான புகாரையும் பதிவு செய்யவும்.",
-submitComplaint: "புகார் அளிக்கவும்",
-complaintTracker: "புகார் கண்காணிப்பு",
-trackerSubtitle: "உங்கள் தனிப்பட்ட புகார் எண்ணை பயன்படுத்தி நிலையை பார்க்கவும்.",
-track: "கண்காணிக்கவும்",
-viewAll: "அனைத்தையும் காண்க",
-readGuidelines: "வழிகாட்டுதலை படிக்கவும்",
-trackerDescription: "உங்கள் தனிப்பட்ட புகார் எண்ணை பயன்படுத்தி நிலையை பார்க்கவும்.",
-complaintStatus: "புகார் நிலை",
-lastUpdated: "கடைசியாக புதுப்பிக்கப்பட்டது",
-guidelinesDescription: "விரைவான தீர்விற்காக சரியான விவரங்களையும் இடத்தையும் வழங்கவும்.",
-viewAll: "அனைத்தையும் காண்க",
-track: "கண்காணிக்கவும்",
-search: "Search",
-enterComplaintId: "Enter Complaint ID (Ex: CMP2026001)",
-inProgress: "In Progress",
-today: "Today",
-complaintGuidelines: "Complaint Guidelines",
-      },
-    },
+    // MESSAGES
+    loading: "Loading...",
+    submitting: "Submitting...",
+    success_request: "Request submitted successfully",
+    error_request: "Failed to submit request",
   },
+},
 
-  lng: localStorage.getItem("lang") || "en",
-  fallbackLng: "en",
+ta: {
+  translation: {
+    // NAV
+    home: "முகப்பு",
+    about: "எங்களை பற்றி",
+    services: "சேவைகள்",
+    complaints: "புகார்கள்",
+    contact: "தொடர்பு கொள்ள",
+    schemes: "திட்டங்கள்",
+    downloads: "பதிவிறக்கங்கள்",
 
-  interpolation: {
-    escapeValue: false,
+    // COMPLAINTS
+    complaintsTitle: "புகார்கள் மற்றும் குறைகள்",
+    complaintsSubtitle: "புகார்களை ஆன்லைனில் பதிவு செய்து நிலையை கண்காணிக்கவும்.",
+    raiseComplaint: "புகார் அளிக்கவும்",
+    submitComplaint: "புகார் சமர்ப்பிக்கவும்",
+    complaintTracker: "புகார் கண்காணிப்பு",
+    trackerSubtitle: "உங்கள் புகார் எண்ணை பயன்படுத்தி நிலையை பார்க்கவும்.",
+    complaintStatus: "புகார் நிலை",
+    lastUpdated: "கடைசியாக புதுப்பிக்கப்பட்டது",
+    complaintGuidelines: "வழிகாட்டுதல்கள்",
+    guidelinesDescription: "விரைவான தீர்விற்காக சரியான விவரங்களை வழங்கவும்.",
+    enterComplaintId: "புகார் எண் உள்ளிடவும்",
+    inProgress: "நடப்பில் உள்ளது",
+    today: "இன்று",
+
+    // COMMON
+    search: "தேடல்",
+    viewAll: "அனைத்தையும் காண்க",
+    track: "கண்காணிக்க",
+
+    // MEETINGS PAGE
+    meetings_title: "சந்திப்புகள் & பங்கேற்பு",
+    meetings_subtitle: "சந்திப்புகள் மற்றும் கோரிக்கைகளை நிர்வகிக்கவும்",
+
+    // TABS
+    scheduled: "திட்டமிடப்பட்டது",
+    calendar: "காலண்டர்",
+    request: "கோரிக்கை",
+    notices: "அறிவிப்புகள்",
+    summary: "சுருக்கம்",
+
+    // STATS
+    upcoming: "வரவிருக்கும்",
+    this_month: "இந்த மாதம்",
+    joinable: "சேர முடியும்",
+    requested: "கோரப்பட்டது",
+
+    // TABLE
+    title: "தலைப்பு",
+    date: "தேதி",
+    date_time: "தேதி & நேரம்",
+    venue: "இடம்",
+    type: "வகை",
+    status: "நிலை",
+    action: "செயல்",
+
+    // STATUS
+    pending: "நிலுவையில்",
+    approved: "அங்கீகரிக்கப்பட்டது",
+    rejected: "நிராகரிக்கப்பட்டது",
+    upcoming_status: "வரவிருக்கும்",
+
+    // BUTTONS
+    view: "பார்க்க",
+    view_details: "விவரங்களை பார்க்க",
+    join: "சேர",
+    submit: "சமர்ப்பிக்க",
+    cancel: "ரத்து",
+    submit_request: "கோரிக்கையை சமர்ப்பிக்க",
+
+    // REQUEST FORM
+    request_meeting: "பொது சந்திப்பு கோரிக்கை",
+    meeting_title: "சந்திப்பு தலைப்பு",
+    description: "விளக்கம்",
+    preferred_date: "விரும்பிய தேதி",
+    preferred_time: "விரும்பிய நேரம்",
+    preferred_venue: "விரும்பிய இடம்",
+    meeting_title_placeholder: "சந்திப்பு தலைப்பை உள்ளிடவும்",
+    description_placeholder: "சந்திப்பின் நோக்கத்தை விளக்கவும்",
+    venue_placeholder: "இடத்தை உள்ளிடவும்",
+
+    // EMPTY STATES
+    no_meetings: "சந்திப்புகள் இல்லை",
+    no_requests: "கோரிக்கைகள் இல்லை",
+    no_notices: "அறிவிப்புகள் இல்லை",
+    no_summary: "சுருக்கம் இல்லை",
+
+    // MESSAGES
+    loading: "ஏற்றுகிறது...",
+    submitting: "சமர்ப்பிக்கப்படுகிறது...",
+    success_request: "கோரிக்கை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது",
+    error_request: "கோரிக்கை தோல்வியடைந்தது",
   },
+},
+
+
+},
+
+lng: localStorage.getItem("lang") || "en",
+fallbackLng: "en",
+
+interpolation: {
+escapeValue: false,
+},
 });
 
 export default i18n;
