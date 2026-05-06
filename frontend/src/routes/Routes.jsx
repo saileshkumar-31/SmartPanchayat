@@ -48,7 +48,7 @@ import WasteCollection from "../pages/citizen/services/civilservices/WasteCollec
 import BuildingPermission from "../pages/citizen/services/civilservices/BuildingPermission.jsx";
 import TradeLicense from "../pages/citizen/services/civilservices/TradeLicense.jsx";
 import NoObjection from "../pages/citizen/services/civilservices/NoObjection.jsx";
-import Transparency from "../pages/transparency/Transparency.jsx";
+import Transparency from "../pages/transparency/TransparencyDashboard.jsx";
 import Funds from "../pages/transparency/Funds.jsx";
 import Reports from "../pages/transparency/Reports.jsx";
 import Ongoing from "../pages/transparency/Ongoing.jsx";

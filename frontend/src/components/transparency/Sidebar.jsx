@@ -1,79 +1,103 @@
-import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  Landmark,
-  Clock3,
+  FolderKanban,
   CheckCircle2,
-  Receipt,
+  BarChart3,
   FileText,
-  FileBarChart2,
 } from "lucide-react";
 
-const Sidebar = () => {
-  const links = [
-    {
-      name: "Dashboard",
-      path: "/transparency",
-      icon: <LayoutDashboard size={18} />,
-    },
-    {
-      name: "Funds",
-      path: "/transparency/funds",
-      icon: <Landmark size={18} />,
-    },
-    {
-      name: "Ongoing",
-      path: "/transparency/ongoing",
-      icon: <Clock3 size={18} />,
-    },
-    {
-      name: "Completed",
-      path: "/transparency/completed",
-      icon: <CheckCircle2 size={18} />,
-    },
-    {
-      name: "Expenses",
-      path: "/transparency/expenses",
-      icon: <Receipt size={18} />,
-    },
-    {
-      name: "Tenders",
-      path: "/transparency/tenders",
-      icon: <FileText size={18} />,
-    },
-    {
-      name: "Reports",
-      path: "/transparency/reports",
-      icon: <FileBarChart2 size={18} />,
-    },
-  ];
+import { NavLink } from "react-router-dom";
 
+const menus = [
+  {
+    name: "Overview",
+    icon: LayoutDashboard,
+    path: "/transparency",
+  },
+  {
+    name: "Ongoing Projects",
+    icon: FolderKanban,
+    path: "/transparency/ongoing-projects",
+  },
+  {
+    name: "Completed Projects",
+    icon: CheckCircle2,
+    path: "/transparency/completed-projects",
+  },
+  {
+    name: "Expense Breakdown",
+    icon: BarChart3,
+    path: "/transparency/expenses",
+  },
+  {
+    name: "Tender & Contracts",
+    icon: FileText,
+    path: "/transparency/tenders",
+  },
+];
+
+export default function Sidebar() {
   return (
-    <div className="w-[250px] min-h-screen bg-white border-r p-4">
-      <h2 className="text-2xl font-bold text-green-700 mb-8">
-        Transparency
-      </h2>
+    <aside
+      className="
+        hidden
+        lg:flex
+        w-72
+        bg-white
+        border-r
+        border-gray-200
+        min-h-screen
+        flex-col
+      "
+    >
+      {/* LOGO */}
+      <div className="p-6 border-b border-gray-100">
 
-      <div className="flex flex-col gap-2">
-        {links.map((link, index) => (
-          <NavLink
-            key={index}
-            to={link.path}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                isActive
-                  ? "bg-green-700 text-white"
-                  : "text-gray-700 hover:bg-green-50"
-              }`
-            }
-          >
-            {link.icon}
-            <span>{link.name}</span>
-          </NavLink>
-        ))}
+        <h2 className="text-2xl font-bold text-[#0b4f35]">
+          Smart Panchayat
+        </h2>
+
+        <p className="text-sm text-gray-500 mt-1">
+          Transparent. Simple. Trusted.
+        </p>
       </div>
-    </div>
-  );
-};
 
-export default Sidebar;
+      {/* MENU */}
+      <div className="p-4 space-y-3">
+
+        {menus.map((item, index) => {
+          const Icon = item.icon;
+
+          return (
+            <NavLink
+              key={index}
+              to={item.path}
+              className={({ isActive }) =>
+                `
+                flex
+                items-center
+                gap-4
+                px-4
+                py-4
+                rounded-2xl
+                transition-all
+                duration-300
+                font-medium
+                ${
+                  isActive
+                    ? "bg-[#0b4f35] text-white shadow-lg"
+                    : "hover:bg-[#edf7f2] text-gray-700"
+                }
+              `
+              }
+            >
+              <Icon size={20} />
+
+              <span>{item.name}</span>
+            </NavLink>
+          );
+        })}
+      </div>
+    </aside>
+  );
+}
