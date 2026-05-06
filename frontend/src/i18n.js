@@ -97,6 +97,38 @@ downloads: "Downloads",
     submitting: "Submitting...",
     success_request: "Request submitted successfully",
     error_request: "Failed to submit request",
+
+    //transparency
+    transparency_title: "Transparency Dashboard",
+    subtitle: "Real-time overview of Panchayat funds and projects.",
+
+    dashboard: "Dashboard",
+    funds: "Funds",
+    ongoing: "Ongoing",
+    completed: "Completed",
+    expenses: "Expenses",
+    tenders: "Tenders",
+    reports: "Reports",
+
+    totalFunds: "Total Funds",
+    fundsUtilized: "Funds Utilized",
+    ongoingProjects: "Ongoing Projects",
+    completedProjects: "Completed Projects",
+
+    fundOverview: "Fund Overview",
+    topProjects: "Top Ongoing Projects",
+    expenseBreakdown: "Expense Breakdown",
+    recentUpdates: "Recent Updates",
+
+    projectName: "Project Name",
+    budget: "Budget",
+    progress: "Progress",
+    contractor: "Contractor",
+    startDate: "Start Date",
+    endDate: "End Date",
+
+    download: "Download",
+    viewDetails: "View Details"
   },
 },
 
@@ -193,6 +225,38 @@ ta: {
     submitting: "சமர்ப்பிக்கப்படுகிறது...",
     success_request: "கோரிக்கை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது",
     error_request: "கோரிக்கை தோல்வியடைந்தது",
+
+    //transparency
+    transparency_title: "வெளிப்படைத் தன்மை டாஷ்போர்டு",
+    subtitle: "பஞ்சாயத்து நிதி மற்றும் திட்டங்களின் நேரடி தகவல்கள்.",
+
+    dashboard: "டாஷ்போர்டு",
+    funds: "நிதிகள்",
+    ongoing: "நடைபெறும் திட்டங்கள்",
+    completed: "முடிந்த திட்டங்கள்",
+    expenses: "செலவுகள்",
+    tenders: "டெண்டர்கள்",
+    reports: "அறிக்கைகள்",
+
+    totalFunds: "மொத்த நிதி",
+    fundsUtilized: "பயன்படுத்தப்பட்ட நிதி",
+    ongoingProjects: "நடைபெறும் திட்டங்கள்",
+    completedProjects: "முடிந்த திட்டங்கள்",
+
+    fundOverview: "நிதி கண்ணோட்டம்",
+    topProjects: "முக்கிய திட்டங்கள்",
+    expenseBreakdown: "செலவுக் கணக்கு",
+    recentUpdates: "சமீபத்திய புதுப்பிப்புகள்",
+
+    projectName: "திட்டத்தின் பெயர்",
+    budget: "பட்ஜெட்",
+    progress: "முன்னேற்றம்",
+    contractor: "ஒப்பந்ததாரர்",
+    startDate: "தொடக்க தேதி",
+    endDate: "முடிவு தேதி",
+
+    download: "பதிவிறக்கு",
+    viewDetails: "விவரங்களை காண்க"
   },
 },
 
