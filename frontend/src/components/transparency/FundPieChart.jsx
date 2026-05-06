@@ -5,6 +5,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { NavLink } from "react-router-dom";
 
 const data = [
   {
@@ -60,9 +61,12 @@ export default function FundPieChart() {
           </p>
         </div>
 
-        <button className="text-[#0b4f35] font-semibold text-sm hover:underline">
-          View All Sources →
-        </button>
+        <NavLink
+  to="/transparency/funds"
+  className="text-[#0b4f35] font-semibold text-sm hover:underline"
+>
+  View All Sources →
+</NavLink>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">

@@ -19,7 +19,6 @@ import {
 export default function TransparencyDashboard() {
   return (
     <DashboardLayout>
-
       <div className="space-y-6">
 
         {/* PAGE HEADER */}
@@ -27,6 +26,10 @@ export default function TransparencyDashboard() {
 
           {/* LEFT */}
           <div>
+            <p className="text-sm text-gray-400 mb-2">
+              Dashboard / Transparency
+            </p>
+
             <h1 className="text-4xl font-bold text-[#0b4f35]">
               Transparency Dashboard
             </h1>
@@ -72,6 +75,7 @@ export default function TransparencyDashboard() {
             >
               View Analytics
             </button>
+
           </div>
         </div>
 
@@ -158,7 +162,6 @@ export default function TransparencyDashboard() {
         </div>
 
       </div>
-
     </DashboardLayout>
   );
 }

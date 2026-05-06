@@ -55,6 +55,35 @@ import Ongoing from "../pages/transparency/Ongoing.jsx";
 import Completed from "../pages/transparency/Completed.jsx";
 import Expenses from "../pages/transparency/Expenses.jsx";
 import Tenders from "../pages/transparency/Tenders.jsx";
+import FundsOverview from "../components/transparency/FundsOverview.jsx";
+import OngoingProjects from "../components/transparency/OngoingProjects.jsx";
+import CompletedProjects from "../components/transparency/CompletedProjects.jsx";
+import ProjectDetails from "../pages/transparency/ProjectDetails.jsx";
+import RecentUpdates from "../pages/transparency/RecentUpdates.jsx";
+import UpdateDetails from "../pages/transparency/UpdateDetails.jsx";
+import CompletedProjectDetails from "../pages/transparency/CompletedProjectDetails.jsx";
+import TenderDetails from "../pages/transparency/TenderDetails.jsx";
+import HousingScheme from "../pages/public/schemes/HousingSchemes.jsx";
+import FarmerWelfare from "../pages/public/schemes/FarmerWelfare.jsx";
+import EducationSupport from "../pages/public/schemes/EducationSupport.jsx";
+import HealthInsurance from "../pages/public/schemes/HealthInsurance.jsx";
+import EmploymentScheme from "../pages/public/schemes/EmploymentScheme.jsx";
+import PensionScheme from "../pages/public/schemes/PensionScheme.jsx";
+import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
+import ApplicationsManagement from "../pages/admin/ApplicationsManagement.jsx";
+import ComplaintsManagement from "../pages/admin/ComplaintsManagement.jsx";
+import UsersManagement from "../pages/admin/UsersManagement.jsx";
+import CertificateManagement from "../pages/admin/CertificatesManagement.jsx"
+import MeetingsManagement from "../pages/admin/MeetingsManagement.jsx";
+import ReportsAnalytics from "../pages/admin/ReportsAnalytics.jsx";
+import SchemesManagement from "../pages/admin/SchemesManagement.jsx";
+import Settings from "../pages/admin/Settings.jsx";
+import TransparencyManagement from "../pages/admin/TransparencyManagement.jsx";
+import BudgetManagement from "../pages/admin/transparency/BudgetManagement.jsx";
+import CompletedProjectsManagement from "../pages/admin/transparency/CompletedProjectsManagement.jsx";
+import ExpensesManagement from "../pages/admin/transparency/ExpensesManagement.jsx";
+import RecentUpdatesManagement from "../pages/admin/transparency/RecentUpdatesManagement.jsx";
+import TenderManagement from "../pages/admin/transparency/TenderManagement.jsx";
 
 
 
@@ -235,19 +264,24 @@ const Routes = createBrowserRouter([
       },
       {
         path: "transparency/funds",
-        element: <Funds />,
+        element: <FundsOverview />,
       },
       {
         path: "transparency/reports",
         element: <Reports />,
       },
       {
-        path: "transparency/ongoing",
-        element: <Ongoing />,
+        path: "transparency/ongoing-projects",
+        element: <OngoingProjects />,
       },
       {
-        path: "transparency/completed",
-        element: <Completed />,
+        path: "transparency/ongoing-projects/project-details",
+        element: <ProjectDetails />,
+      },
+
+      {
+        path: "transparency/completed-projects",
+        element: <CompletedProjects />,
       },
       {
         path: "transparency/expenses",
@@ -258,13 +292,111 @@ const Routes = createBrowserRouter([
         element: <Tenders />,
       },
       {
+        path: "transparency/tenders-details",
+        element: <TenderDetails/>,
+      },
+      {
+        path: "transparency/recent-updates",
+        element: <RecentUpdates />,
+      },
+      {
+        path: "transparency/update-details",
+        element: <UpdateDetails />,
+      },
+      {
+        path: "/transparency/completed-project-details",
+        element: <CompletedProjectDetails />,
+      },
+
+      {
         path: "schemes",
         element: <Schemes />,
+      },
+      {
+        path: "schemes/housing-scheme",
+        element: <HousingScheme />,
+      },
+      {
+        path: "schemes/farmer-welfare",
+        element: <FarmerWelfare />,
+      },
+      {
+        path: "schemes/education-support",
+        element: <EducationSupport />,
+      },
+      {
+        path: "schemes/health-insurance",
+        element: <HealthInsurance />,
+      },
+      {
+        path: "schemes/employment-scheme",
+        element: <EmploymentScheme />,
+      },
+      {
+        path: "schemes/pension-scheme",
+        element: <PensionScheme />,
       },
       {
         path: "contact",
         element: <ContactUs />,
       },
+      {
+        path: "admin/dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "admin/application-management",
+        element: <ApplicationsManagement />,
+      },
+      {
+        path: "admin/complaints-management",
+        element: <ComplaintsManagement />,
+      },
+      {
+        path: "admin/users-management",
+        element: <UsersManagement />,
+      },
+      {
+        path: "admin/certificate-management",
+        element: <CertificateManagement />,
+      },
+      {
+        path: "admin/reports-analytics",
+        element: <ReportsAnalytics />,
+      },
+      {
+        path: "admin/schemes-management",
+        element: <SchemesManagement/>,
+      },
+      {
+        path: "admin/settings",
+        element: <Settings />,
+      },
+      {
+        path: "admin/transparency-management",
+        element: <TransparencyManagement />,
+      },
+      {
+        path: "admin/transparency/budget-management",
+        element: <BudgetManagement />,
+      },
+      {
+        path: "admin/transparency/completedprojects-management",
+        element: <CompletedProjectsManagement />,
+      },
+      {
+        path: "admin/transparency/expenses-management",
+        element: <ExpensesManagement />,
+      },
+      {
+        path: "admin/transparency/recentupdates-management",
+        element: <RecentUpdatesManagement />,
+      },
+      {
+        path: "admin/transparency/tender-management",
+        element: <TenderManagement />,
+      },
+
 
     ],
   },

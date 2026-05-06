@@ -13,6 +13,7 @@ const menus = [
     name: "Overview",
     icon: LayoutDashboard,
     path: "/transparency",
+    end: true,
   },
   {
     name: "Ongoing Projects",
@@ -50,6 +51,7 @@ export default function Sidebar() {
         flex-col
       "
     >
+
       {/* LOGO */}
       <div className="p-6 border-b border-gray-100">
 
@@ -60,6 +62,7 @@ export default function Sidebar() {
         <p className="text-sm text-gray-500 mt-1">
           Transparent. Simple. Trusted.
         </p>
+
       </div>
 
       {/* MENU */}
@@ -72,6 +75,7 @@ export default function Sidebar() {
             <NavLink
               key={index}
               to={item.path}
+              end={item.end}
               className={({ isActive }) =>
                 `
                 flex
@@ -86,17 +90,20 @@ export default function Sidebar() {
                 ${
                   isActive
                     ? "bg-[#0b4f35] text-white shadow-lg"
-                    : "hover:bg-[#edf7f2] text-gray-700"
+                    : "text-gray-700 hover:bg-[#edf7f2]"
                 }
               `
               }
             >
+
               <Icon size={20} />
 
               <span>{item.name}</span>
+
             </NavLink>
           );
         })}
+
       </div>
     </aside>
   );

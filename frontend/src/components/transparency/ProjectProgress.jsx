@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const projects = [
   {
     name: "Concrete Road - Ward 3",
@@ -24,15 +26,18 @@ const projects = [
 export default function ProjectProgress() {
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-
+      
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">
           Top Ongoing Projects
         </h2>
 
-        <button className="text-[#0b4f35] font-semibold text-sm hover:underline">
+        <NavLink
+          to="/transparency/ongoing-projects"
+          className="text-[#0b4f35] font-semibold text-sm hover:underline"
+        >
           View All →
-        </button>
+        </NavLink>
       </div>
 
       <div className="space-y-5">

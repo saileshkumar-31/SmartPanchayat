@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 const updates = [
   {
     title: "New fund of ₹15,00,000 approved",
@@ -22,9 +23,12 @@ export default function RecentUpdates() {
           Recent Updates
         </h2>
 
-        <button className="text-[#0b4f35] text-sm font-semibold">
+        <NavLink
+          to="/transparency/recent-updates"
+          className="text-[#0b4f35] font-semibold text-sm hover:underline"
+        >
           View All →
-        </button>
+        </NavLink>
       </div>
 
       <div className="space-y-6">
