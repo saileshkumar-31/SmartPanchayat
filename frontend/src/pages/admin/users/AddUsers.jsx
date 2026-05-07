@@ -16,11 +16,13 @@ import {
   EyeOff,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import AdminLayout from "../../../components/admin/AdminLayout";
+import { api } from "../../../lib/api";
 
 export default function CreateUser() {
+  const navigate = useNavigate();
 
   // Dynamic States
   const [fullName, setFullName] =
@@ -55,6 +57,32 @@ export default function CreateUser() {
 
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
+
+  const handleSubmit = async () => {
+    if (!fullName || !email || !phone || !password) {
+      alert("Please fill all required fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    try {
+      await api.post("/users", {
+        name: fullName,
+        email,
+        phone,
+        role: role.toLowerCase(),
+        status,
+        password,
+        address,
+        notes,
+      });
+      navigate("/admin/users-management");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -481,7 +509,7 @@ export default function CreateUser() {
             </button>
 
             {/* Save */}
-            <button className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
+            <button onClick={handleSubmit} className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
 
               <Save size={20} />
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Save,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
+import { api } from "../../lib/api";
 
 export default function Settings() {
 
@@ -23,14 +24,33 @@ export default function Settings() {
     citizenRegistration: true,
     autoApproval: false,
   });
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    api.get("/settings").then((res) => setSettings(res.data)).catch(() => {});
+  }, []);
 
   // Dynamic Toggle
-  const toggleSetting = (key) => {
+  const toggleSetting = async (key) => {
+    const next = { ...settings, [key]: !settings[key] };
+    setSettings(next);
+    try {
+      const res = await api.put("/settings", next);
+      setSettings(res.data);
+      setMessage("Settings saved");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
 
-    setSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+  const saveSettings = async () => {
+    try {
+      const res = await api.put("/settings", settings);
+      setSettings(res.data);
+      setMessage("Settings saved");
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   return (
@@ -55,11 +75,13 @@ export default function Settings() {
         </div>
 
         {/* Save Button */}
-        <button className="bg-[#0b4f35] hover:bg-[#083824] text-white px-6 py-4 rounded-2xl font-semibold shadow-lg transition flex items-center gap-3 w-fit">
+        <button onClick={saveSettings} className="bg-[#0b4f35] hover:bg-[#083824] text-white px-6 py-4 rounded-2xl font-semibold shadow-lg transition flex items-center gap-3 w-fit">
           <Save size={20} />
           Save Settings
         </button>
       </div>
+
+      {message && <p className="mb-6 text-green-700 font-semibold">{message}</p>}
 
       {/* Settings Grid */}
       <div className="grid xl:grid-cols-2 gap-8">

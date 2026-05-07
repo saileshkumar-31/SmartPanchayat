@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "../../components/transparency/Sidebar";
+import { api } from "../../lib/api";
 
 const projects = [
   {
@@ -33,6 +35,26 @@ const projects = [
 
 const Ongoing = () => {
   const { t } = useTranslation();
+  const [rows, setRows] = useState(projects);
+
+  useEffect(() => {
+    api.get("/transparency/projects")
+      .then((res) => {
+        const dynamicRows = res.data
+          .filter((item) => item.category !== "Completed")
+          .map((item, index) => ({
+            id: index + 1,
+            project: item.title,
+            budget: `₹ ${Number(item.budget).toLocaleString("en-IN")}`,
+            spent: `₹ ${Number(item.spent).toLocaleString("en-IN")}`,
+            progress: item.progress,
+            contractor: item.contractor || "-",
+            status: item.status,
+          }));
+        if (dynamicRows.length) setRows(dynamicRows);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="flex bg-[#f3f4f6] min-h-screen">
@@ -77,7 +99,7 @@ const Ongoing = () => {
               </thead>
 
               <tbody>
-                {projects.map((item) => (
+                {rows.map((item) => (
                   <tr key={item.id} className="border-t hover:bg-gray-50">
                     <td className="p-4">{item.id}</td>
                     <td className="p-4">{item.project}</td>

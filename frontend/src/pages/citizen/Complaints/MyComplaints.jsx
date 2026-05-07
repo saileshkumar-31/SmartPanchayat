@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FileText,
   Search,
 } from "lucide-react";
+import { api, getCurrentUser } from "../../../lib/api";
 
 const MyComplaints = () => {
   const [search, setSearch] = useState("");
+  const [complaints, setComplaints] = useState([]);
 
-  const complaints = [];
+  useEffect(() => {
+    const user = getCurrentUser();
+    const query = user?.user_id ? `?citizen_id=${user.user_id}` : "";
+    api.get(`/complaints${query}`)
+      .then((res) => setComplaints(res.data))
+      .catch((error) => alert(error.message));
+  }, []);
 
   const filteredComplaints = complaints.filter(
     (item) =>
-      item.id.toLowerCase().includes(search.toLowerCase()) ||
-      item.type.toLowerCase().includes(search.toLowerCase())
+      item.reference_no.toLowerCase().includes(search.toLowerCase()) ||
+      item.category.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -73,6 +81,35 @@ const MyComplaints = () => {
               You have not submitted any complaints yet. Once you raise a complaint,
               it will appear here with its progress and status updates.
             </p>
+          </div>
+        )}
+
+        {filteredComplaints.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-[#f8fafc] text-gray-500">
+                  <tr>
+                    <th className="p-4">Reference</th>
+                    <th className="p-4">Type</th>
+                    <th className="p-4">Location</th>
+                    <th className="p-4">Priority</th>
+                    <th className="p-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredComplaints.map((item) => (
+                    <tr key={item.complaint_id} className="border-t border-gray-100">
+                      <td className="p-4 font-semibold text-[#13284c]">{item.reference_no}</td>
+                      <td className="p-4">{item.category}</td>
+                      <td className="p-4">{item.location}</td>
+                      <td className="p-4">{item.priority}</td>
+                      <td className="p-4 font-semibold text-green-700">{item.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

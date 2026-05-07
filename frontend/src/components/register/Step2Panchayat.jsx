@@ -59,14 +59,17 @@ const Step2Panchayat = () => {
   };
 
   const [form, setForm] = useState({
-    state: "",
-    district: "",
-    taluk: "",
-    panchayat: "",
-    ward: "",
-    village: "",
-    houseNo: "",
-    pinCode: "",
+    ...{
+      state: "",
+      district: "",
+      taluk: "",
+      panchayat: "",
+      ward: "",
+      village: "",
+      houseNo: "",
+      pinCode: "",
+    },
+    ...JSON.parse(sessionStorage.getItem("registration_panchayat") || "{}"),
   });
 
   const handleChange = (key, value) => {
@@ -115,6 +118,15 @@ const Step2Panchayat = () => {
     }
 
     setForm({ ...form, [key]: value });
+  };
+
+  const handleNext = () => {
+    if (!form.state || !form.district || !form.taluk || !form.panchayat) {
+      alert("Please complete the required panchayat details.");
+      return;
+    }
+    sessionStorage.setItem("registration_panchayat", JSON.stringify(form));
+    navigate("/citizen/register/verification");
   };
 
   return (
@@ -343,7 +355,7 @@ const Step2Panchayat = () => {
 
         <button
           type="button"
-          onClick={() => navigate("/citizen/register/verification")}
+          onClick={handleNext}
           className="h-12 sm:h-14 px-6 sm:px-8 bg-green-700 hover:bg-green-800 text-white rounded-xl flex items-center justify-center gap-3 font-semibold text-sm sm:text-base"
         >
           Next: Verification

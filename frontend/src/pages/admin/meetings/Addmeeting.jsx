@@ -13,11 +13,13 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import AdminLayout from "../../../components/admin/AdminLayout";
+import { api } from "../../../lib/api";
 
 export default function AddMeeting() {
+  const navigate = useNavigate();
 
   // Dynamic State
   const [title, setTitle] =
@@ -49,6 +51,29 @@ export default function AddMeeting() {
 
   const [sendNotification, setSendNotification] =
     useState(true);
+
+  const handleSubmit = async () => {
+    if (!title || !date || !location) {
+      alert("Please enter title, date, and location.");
+      return;
+    }
+    try {
+      await api.post("/meetings", {
+        title,
+        description: notes,
+        date,
+        time,
+        venue: location,
+        type: organizer || "Gram Sabha",
+        agenda,
+        attendees: participants || 0,
+        status,
+      });
+      navigate("/admin/meetings-schedule");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -389,7 +414,7 @@ export default function AddMeeting() {
             </button>
 
             {/* Save */}
-            <button className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
+            <button onClick={handleSubmit} className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
 
               <Save size={20} />
 

@@ -13,8 +13,31 @@ import { useNavigate } from "react-router-dom";
 const Step1Personal = () => {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [form, setForm] = useState(() => {
+    const saved = JSON.parse(sessionStorage.getItem("registration_personal") || "{}");
+    return {
+      user_name: saved.user_name || "",
+      user_mobile: saved.user_mobile || "",
+      user_email: saved.user_email || "",
+      user_pass: saved.user_pass || "",
+      confirmPassword: saved.confirmPassword || "",
+    };
+  });
 
   const navigate = useNavigate();
+  const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+  const handleNext = () => {
+    if (!form.user_name || !form.user_mobile || !form.user_email || !form.user_pass) {
+      alert("Please complete all required personal details.");
+      return;
+    }
+    if (form.user_pass !== form.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    sessionStorage.setItem("registration_personal", JSON.stringify(form));
+    navigate("/citizen/register/panchayat");
+  };
 
   return (
     <>
@@ -47,6 +70,8 @@ const Step1Personal = () => {
 
             <input
               type="text"
+              value={form.user_name}
+              onChange={(e) => handleChange("user_name", e.target.value)}
               placeholder="Enter your full name"
               className="w-full outline-none text-sm sm:text-base lg:text-lg"
             />
@@ -64,6 +89,8 @@ const Step1Personal = () => {
 
             <input
               type="text"
+              value={form.user_mobile}
+              onChange={(e) => handleChange("user_mobile", e.target.value)}
               placeholder="Enter 10-digit mobile number"
               className="w-full outline-none text-sm sm:text-base lg:text-lg"
             />
@@ -81,6 +108,8 @@ const Step1Personal = () => {
 
             <input
               type="email"
+              value={form.user_email}
+              onChange={(e) => handleChange("user_email", e.target.value)}
               placeholder="Enter your email address"
               className="w-full outline-none text-sm sm:text-base lg:text-lg"
             />
@@ -98,6 +127,8 @@ const Step1Personal = () => {
 
             <input
               type={showPass ? "text" : "password"}
+              value={form.user_pass}
+              onChange={(e) => handleChange("user_pass", e.target.value)}
               placeholder="Create a strong password"
               className="w-full outline-none text-sm sm:text-base lg:text-lg"
             />
@@ -126,6 +157,8 @@ const Step1Personal = () => {
 
             <input
               type={showConfirm ? "text" : "password"}
+              value={form.confirmPassword}
+              onChange={(e) => handleChange("confirmPassword", e.target.value)}
               placeholder="Confirm your password"
               className="w-full outline-none text-sm sm:text-base lg:text-lg"
             />
@@ -147,7 +180,7 @@ const Step1Personal = () => {
       {/* BUTTON */}
       <div className="flex justify-stretch sm:justify-end mt-8 sm:mt-10 lg:mt-14">
         <button
-          onClick={() => navigate("/citizen/register/panchayat")}
+          onClick={handleNext}
           className="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white h-12 sm:h-14 px-6 sm:px-8 rounded-xl flex items-center justify-center gap-3 font-semibold text-sm sm:text-base lg:text-lg"
         >
           Next: Panchayat Details

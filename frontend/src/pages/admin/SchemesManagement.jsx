@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -12,51 +12,36 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
+import { api } from "../../lib/api";
 
 export default function SchemesManagement() {
 
   // Dynamic State
-  const [schemes, setSchemes] = useState([
-    {
-      id: "SCH-1001",
-      title: "Housing Scheme",
-      beneficiaries: 124,
-      amount: "₹25,00,000",
-      status: "Active",
-    },
-    {
-      id: "SCH-1002",
-      title: "Farmer Welfare",
-      beneficiaries: 210,
-      amount: "₹18,50,000",
-      status: "Active",
-    },
-    {
-      id: "SCH-1003",
-      title: "Education Support",
-      beneficiaries: 94,
-      amount: "₹12,00,000",
-      status: "Inactive",
-    },
-    {
-      id: "SCH-1004",
-      title: "Health Insurance",
-      beneficiaries: 176,
-      amount: "₹30,00,000",
-      status: "Active",
-    },
-  ]);
+  const [schemes, setSchemes] = useState([]);
+
+  const loadSchemes = async () => {
+    const res = await api.get("/schemes");
+    setSchemes(
+      res.data.map((item) => ({
+        id: item.scheme_id,
+        title: item.title,
+        beneficiaries: 0,
+        amount: item.amount || "0",
+        status: item.status,
+        raw: item,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    loadSchemes().catch((error) => alert(error.message));
+  }, []);
 
   // Dynamic Toggle
-  const updateStatus = (id, newStatus) => {
-
-    setSchemes((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: newStatus }
-          : item
-      )
-    );
+  const updateStatus = async (id, newStatus) => {
+    const scheme = schemes.find((item) => item.id === id)?.raw;
+    await api.put(`/schemes/${id}`, { ...scheme, status: newStatus });
+    await loadSchemes();
   };
 
   const statusStyle = {

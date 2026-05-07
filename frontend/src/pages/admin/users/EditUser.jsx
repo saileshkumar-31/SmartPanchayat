@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ArrowLeft,
@@ -17,11 +17,15 @@ import {
   Activity,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 
 import AdminLayout from "../../../components/admin/AdminLayout";
+import { api } from "../../../lib/api";
 
 export default function EditUser() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("id");
 
   // Dynamic States
   const [fullName, setFullName] =
@@ -56,6 +60,48 @@ export default function EditUser() {
 
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    api.get(`/users/${userId}`).then((res) => {
+      const user = res.data;
+      setFullName(user.user_name || "");
+      setEmail(user.user_email || "");
+      setPhone(user.user_mobile || "");
+      setRole(user.user_role === "admin" ? "Admin" : "Citizen");
+      setStatus(user.user_status || "Active");
+      setAddress(user.user_address || "");
+      setNotes(user.user_notes || "");
+      setPassword("");
+      setConfirmPassword("");
+    }).catch((error) => alert(error.message));
+  }, [userId]);
+
+  const handleSubmit = async () => {
+    if (!userId) {
+      alert("No user selected.");
+      return;
+    }
+    if (password && password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    try {
+      await api.put(`/users/${userId}`, {
+        name: fullName,
+        email,
+        phone,
+        role: role.toLowerCase(),
+        status,
+        password: password || undefined,
+        address,
+        notes,
+      });
+      navigate("/admin/users-management");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -479,7 +525,7 @@ export default function EditUser() {
             </button>
 
             {/* Save */}
-            <button className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
+            <button onClick={handleSubmit} className="bg-gradient-to-r from-[#0b4f35] to-[#2bb673] hover:opacity-95 text-white px-8 py-4 rounded-2xl font-semibold transition flex items-center justify-center gap-3 shadow-lg">
 
               <Save size={20} />
 

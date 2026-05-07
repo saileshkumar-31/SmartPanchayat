@@ -2,10 +2,29 @@ import { useNavigate } from "react-router";
 import bg from "../../assets/adminlogin/bg.png";
 import  { useState } from "react";
 import { User, Lock, Eye, EyeOff , ShieldUser } from "lucide-react";
+import { api, setAuthSession } from "../../lib/api";
 
 const AdminLogin =()=>{
     const [showPassword, setShowPassword] = useState(false)
+    const [loginId, setLoginId] = useState("");
+    const [password, setPassword] = useState("");
 const navigate = useNavigate();
+const handleLogin = async () => {
+  try {
+    const payload = loginId.includes("@")
+      ? { email: loginId, password }
+      : { mobile: loginId, password };
+    const res = await api.post("/auth/login", payload);
+    if (res.data.user_role !== "admin" && res.data.user_role !== "Admin") {
+      alert("This account does not have admin access.");
+      return;
+    }
+    setAuthSession(res.data, res.token);
+    navigate("/admin/dashboard");
+  } catch (error) {
+    alert(error.message);
+  }
+};
     return(
         <section className="min-h-screen bg-[#f5f7f4] px-4 sm:px-6 py-8 sm:py-12 lg:py-14 flex items-center">
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
@@ -65,6 +84,8 @@ const navigate = useNavigate();
                   id="loginId"
                   name="loginId"
                   type="text"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
                   placeholder="Enter mobile number or email"
                   autoComplete="username"
                   className="w-full border border-gray-300 rounded-xl pl-12 pr-4 py-3 sm:py-4 outline-none focus:border-green-700"
@@ -91,6 +112,8 @@ const navigate = useNavigate();
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   className="w-full border border-gray-300 rounded-xl pl-12 pr-12 py-3 sm:py-4 outline-none focus:border-green-700"
@@ -127,7 +150,7 @@ const navigate = useNavigate();
             </div>
 
             {/* LOGIN BUTTON */}
-            <button className="w-full bg-green-800 hover:bg-green-900 text-white py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-md transition">
+            <button onClick={handleLogin} className="w-full bg-green-800 hover:bg-green-900 text-white py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-md transition">
               Login
             </button>
 

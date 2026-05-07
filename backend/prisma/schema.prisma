@@ -16,6 +16,199 @@ model UserRegistration {
   user_pass       String
   user_panchayat  String
   user_role       String @default("citizen")
+  user_status     String @default("Active")
+  user_address    String?
+  user_notes      String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
+
+  complaints      Complaint[]
+  meetingRequests MeetingRequest[]
+  applications    Application[]
+}
+
+model Complaint {
+  complaint_id String @id @default(uuid())
+  reference_no String @unique
+  category     String
+  subject      String
+  description  String
+  location     String
+  priority     String @default("Medium")
+  status       String @default("Pending")
+  details      Json?
+  citizen_id   String?
+  citizen      UserRegistration? @relation(fields: [citizen_id], references: [user_id], onDelete: SetNull)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model Meeting {
+  meeting_id  String @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  time        String?
+  venue       String
+  type        String @default("Gram Sabha")
+  agenda      String?
+  minutes     String?
+  attendees   Int @default(0)
+  status      String @default("Upcoming")
+  is_public   Boolean @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model MeetingRequest {
+  request_id  String @id @default(uuid())
+  title       String
+  description String
+  preferred_date DateTime?
+  location    String?
+  status      String @default("Pending")
+  citizen_id  String?
+  citizen     UserRegistration? @relation(fields: [citizen_id], references: [user_id], onDelete: SetNull)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Scheme {
+  scheme_id    String @id @default(uuid())
+  title        String
+  title_ta     String?
+  slug         String @unique
+  category     String
+  category_ta  String?
+  description  String
+  description_ta String?
+  eligibility  String?
+  eligibility_ta String?
+  benefits     String?
+  benefits_ta  String?
+  department   String?
+  department_ta String?
+  amount       String?
+  status       String @default("Active")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model Application {
+  application_id String @id @default(uuid())
+  reference_no   String @unique
+  service_type   String
+  service_name   String
+  applicant_name String
+  mobile         String?
+  email          String?
+  location       String?
+  status         String @default("Submitted")
+  remarks        String?
+  details        Json?
+  citizen_id     String?
+  citizen        UserRegistration? @relation(fields: [citizen_id], references: [user_id], onDelete: SetNull)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+
+model ContactMessage {
+  message_id String @id @default(uuid())
+  name       String
+  email      String
+  subject    String
+  message    String
+  status     String @default("Unread")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model TransparencyProject {
+  project_id  String @id @default(uuid())
+  title       String
+  category    String @default("Ongoing")
+  budget      Float @default(0)
+  spent       Float @default(0)
+  progress    Int @default(0)
+  contractor  String?
+  location    String?
+  start_date  DateTime?
+  end_date    DateTime?
+  status      String @default("Ongoing")
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TransparencyExpense {
+  expense_id  String @id @default(uuid())
+  title       String
+  category    String
+  amount      Float
+  paid_to     String?
+  expense_date DateTime @default(now())
+  status      String @default("Published")
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TransparencyTender {
+  tender_id   String @id @default(uuid())
+  title       String
+  department  String?
+  budget      Float @default(0)
+  deadline    DateTime?
+  status      String @default("Open")
+  contractor  String?
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TransparencyBudget {
+  budget_id   String @id @default(uuid())
+  title       String
+  category    String
+  allocated   Float @default(0)
+  spent       Float @default(0)
+  year        String?
+  status      String @default("Active")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TransparencyUpdate {
+  update_id   String @id @default(uuid())
+  title       String
+  summary     String
+  details     String?
+  status      String @default("Published")
+  published_at DateTime @default(now())
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TransparencyReport {
+  report_id   String @id @default(uuid())
+  title       String
+  category    String
+  period      String?
+  file_url    String?
+  status      String @default("Published")
+  summary     String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model SiteSettings {
+  settings_id         String @id @default("default")
+  notifications       Boolean @default(true)
+  maintenanceMode     Boolean @default(false)
+  publicTransparency  Boolean @default(true)
+  tamilLanguage       Boolean @default(true)
+  citizenRegistration Boolean @default(true)
+  autoApproval        Boolean @default(false)
+  restrictionMessage  String @default("Smart Panchayat is temporarily restricted by the administrator.")
+  updated_at          DateTime @updatedAt
 }

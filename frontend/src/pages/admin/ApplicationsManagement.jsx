@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -10,61 +10,39 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
+import { api } from "../../lib/api";
 
 export default function ApplicationsManagement() {
 
   // Dynamic State
-  const [applications, setApplications] = useState([
-    {
-      id: "APP-1024",
-      name: "Sailesh Kumar",
-      type: "Income Certificate",
-      date: "12 May 2026",
-      status: "Pending",
-    },
-    {
-      id: "APP-1025",
-      name: "Arun Kumar",
-      type: "Nativity Certificate",
-      date: "11 May 2026",
-      status: "Approved",
-    },
-    {
-      id: "APP-1026",
-      name: "Priya",
-      type: "First Graduate Certificate",
-      date: "10 May 2026",
-      status: "Rejected",
-    },
-    {
-      id: "APP-1027",
-      name: "Kavin",
-      type: "Residence Certificate",
-      date: "09 May 2026",
-      status: "Pending",
-    },
-    {
-      id: "APP-1028",
-      name: "Meena",
-      type: "Community Certificate",
-      date: "08 May 2026",
-      status: "Approved",
-    },
-  ]);
+  const [applications, setApplications] = useState([]);
 
-  // Update Status
-  const updateStatus = (id, newStatus) => {
-
-    setApplications((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: newStatus }
-          : item
-      )
+  const loadApplications = async () => {
+    const res = await api.get("/applications");
+    setApplications(
+      res.data.map((item) => ({
+        id: item.application_id,
+        reference: item.reference_no,
+        name: item.applicant_name,
+        type: item.service_name,
+        date: new Date(item.created_at).toLocaleDateString(),
+        status: item.status,
+      }))
     );
   };
 
+  useEffect(() => {
+    loadApplications().catch((error) => alert(error.message));
+  }, []);
+
+  // Update Status
+  const updateStatus = async (id, newStatus) => {
+    await api.patch(`/applications/${id}`, { status: newStatus });
+    await loadApplications();
+  };
+
   const statusStyle = {
+    Submitted: "bg-yellow-100 text-yellow-700",
     Pending: "bg-yellow-100 text-yellow-700",
     Approved: "bg-green-100 text-green-700",
     Rejected: "bg-red-100 text-red-700",
@@ -73,8 +51,8 @@ export default function ApplicationsManagement() {
   // Dynamic Stats
   const totalApplications = applications.length;
 
-  const pendingCount = applications.filter(
-    (item) => item.status === "Pending"
+  const pendingCount = applications.filter((item) =>
+    ["Submitted", "Pending"].includes(item.status)
   ).length;
 
   const approvedCount = applications.filter(
@@ -260,7 +238,7 @@ export default function ApplicationsManagement() {
 
                   {/* ID */}
                   <td className="p-6 font-semibold text-[#13284c]">
-                    {item.id}
+                    {item.reference}
                   </td>
 
                   {/* Name */}

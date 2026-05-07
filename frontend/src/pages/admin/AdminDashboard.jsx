@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FileText,
   AlertTriangle,
@@ -8,31 +9,45 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
+import { api } from "../../lib/api";
 
 export default function AdminDashboard() {
+
+  const [summary, setSummary] = useState({
+    applications: 0,
+    complaints: 0,
+    users: 0,
+    pendingApplications: 0,
+  });
+
+  useEffect(() => {
+    api.get("/dashboard/summary")
+      .then((res) => setSummary(res.data))
+      .catch(() => {});
+  }, []);
 
   const stats = [
     {
       title: "Applications",
-      value: "124",
+      value: summary.applications,
       icon: <FileText size={24} />,
       color: "from-blue-600 to-cyan-500",
     },
     {
       title: "Complaints",
-      value: "38",
+      value: summary.complaints,
       icon: <AlertTriangle size={24} />,
       color: "from-red-500 to-pink-500",
     },
     {
       title: "Citizens",
-      value: "1,204",
+      value: summary.users,
       icon: <Users size={24} />,
       color: "from-purple-600 to-indigo-500",
     },
     {
       title: "Approved",
-      value: "97",
+      value: summary.applications - summary.pendingApplications,
       icon: <BadgeCheck size={24} />,
       color: "from-green-600 to-emerald-500",
     },

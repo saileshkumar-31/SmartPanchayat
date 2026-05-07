@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -17,44 +17,30 @@ import {
 import { NavLink } from "react-router-dom";
 
 import AdminLayout from "../../../components/admin/AdminLayout";
+import { api } from "../../../lib/api";
 
 export default function UsersManagement() {
 
   // Dynamic Users State
-  const [users, setUsers] = useState([
-    {
-      id: "USR-1001",
-      name: "Sailesh Kumar",
-      role: "Citizen",
-      phone: "+91 9876543210",
-      email: "sailesh@gmail.com",
-      status: "Active",
-    },
-    {
-      id: "USR-1002",
-      name: "Arun Kumar",
-      role: "Citizen",
-      phone: "+91 9123456780",
-      email: "arun@gmail.com",
-      status: "Inactive",
-    },
-    {
-      id: "USR-1003",
-      name: "Village Officer",
-      role: "Admin",
-      phone: "+91 9000011111",
-      email: "admin@panchayat.in",
-      status: "Active",
-    },
-    {
-      id: "USR-1004",
-      name: "Priya",
-      role: "Citizen",
-      phone: "+91 9876501234",
-      email: "priya@gmail.com",
-      status: "Active",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+
+  const loadUsers = async () => {
+    const res = await api.get("/users");
+    setUsers(
+      res.data.map((user) => ({
+        id: user.user_id,
+        name: user.user_name,
+        role: user.user_role === "admin" ? "Admin" : "Citizen",
+        phone: user.user_mobile,
+        email: user.user_email,
+        status: user.user_status,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    loadUsers().catch((error) => alert(error.message));
+  }, []);
 
   // Delete Modal State
   const [deleteModal, setDeleteModal] =
@@ -69,32 +55,19 @@ export default function UsersManagement() {
     setDeleteModal(true);
   };
 
-  const confirmDelete = () => {
-    setUsers((prev) =>
-      prev.filter(
-        (item) => item.id !== selectedUser.id
-      )
-    );
-
+  const confirmDelete = async () => {
+    await api.delete(`/users/${selectedUser.id}`);
+    await loadUsers();
     setDeleteModal(false);
     setSelectedUser(null);
   };
 
   // Disable / Enable User
-  const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              status:
-                item.status === "Active"
-                  ? "Inactive"
-                  : "Active",
-            }
-          : item
-      )
-    );
+  const toggleStatus = async (id) => {
+    const user = users.find((item) => item.id === id);
+    const status = user?.status === "Active" ? "Inactive" : "Active";
+    await api.patch(`/users/${id}/status`, { status });
+    await loadUsers();
   };
 
   // Styles
@@ -416,7 +389,7 @@ export default function UsersManagement() {
 
                       {/* Edit */}
                       <NavLink
-                        to="/admin/users-edit"
+                        to={`/admin/users-edit?id=${item.id}`}
                         className="w-11 h-11 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center hover:scale-105 transition"
                       >
                         <Pencil size={18} />

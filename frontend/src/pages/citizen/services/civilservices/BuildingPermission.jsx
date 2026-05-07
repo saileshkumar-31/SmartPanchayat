@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function BuildingPermission() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function BuildingPermission() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.ownerName || !formData.mobile || !formData.location) {
@@ -34,10 +35,16 @@ export default function BuildingPermission() {
       return;
     }
 
-    console.log(formData);
-    alert("Building Permission Request Submitted!");
-
-    navigate("/applicationtracker");
+    try {
+      const res = await submitApplication("Building Permission", "Civil Service", {
+        ...formData,
+        name: formData.ownerName,
+      });
+      alert(`Building Permission Request Submitted! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

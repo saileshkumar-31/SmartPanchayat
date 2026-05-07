@@ -6,6 +6,7 @@ import {
   Upload,
   Send,
 } from "lucide-react";
+import { submitComplaint } from "../../../lib/complaints";
 
 const RoadDamage = () => {
   const [formData, setFormData] = useState({
@@ -26,11 +27,15 @@ const RoadDamage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
-    alert("Road damage complaint submitted successfully.");
+    try {
+      const res = await submitComplaint("Road Damage", formData);
+      alert(`Road damage complaint submitted. Reference: ${res.data.reference_no}`);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

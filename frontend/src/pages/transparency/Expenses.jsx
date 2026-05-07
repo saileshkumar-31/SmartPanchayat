@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "../../components/transparency/DashboardLayout";
+import { api } from "../../lib/api";
 
 import {
   PieChart,
@@ -53,16 +55,35 @@ const expenseData = [
   },
 ];
 
-const totalSpent = expenseData.reduce(
-  (acc, item) => acc + item.spent,
-  0
-);
-
 const formatCurrency = (value) => {
   return `₹${value.toLocaleString("en-IN")}`;
 };
 
 export default function ExpenseBreakdown() {
+  const [expenses, setExpenses] = useState(expenseData);
+  const totalSpent = useMemo(
+    () => expenses.reduce((acc, item) => acc + item.spent, 0),
+    [expenses]
+  );
+
+  useEffect(() => {
+    api.get("/transparency/expenses")
+      .then((res) => {
+        if (!res.data.length) return;
+        const colors = ["#2563eb", "#22c55e", "#f59e0b", "#8b5cf6", "#ef4444", "#14b8a6"];
+        setExpenses(
+          res.data.map((item, index) => ({
+            category: item.category,
+            allocated: item.amount,
+            spent: item.amount,
+            utilization: 100,
+            color: colors[index % colors.length],
+          }))
+        );
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <DashboardLayout>
 
@@ -383,7 +404,7 @@ export default function ExpenseBreakdown() {
 
                   <tbody>
 
-                    {expenseData.map((item, index) => (
+                    {expenses.map((item, index) => (
                       <tr
                         key={index}
                         className="
@@ -495,14 +516,14 @@ export default function ExpenseBreakdown() {
                   <PieChart>
 
                     <Pie
-                      data={expenseData}
+                      data={expenses}
                       dataKey="spent"
                       innerRadius={75}
                       outerRadius={110}
                       paddingAngle={3}
                     >
 
-                      {expenseData.map((entry, index) => (
+                      {expenses.map((entry, index) => (
                         <Cell
                           key={index}
                           fill={entry.color}
@@ -535,7 +556,7 @@ export default function ExpenseBreakdown() {
                 >
 
                   <h2 className="text-3xl font-bold text-[#0b4f35]">
-                    ₹78.3L
+                    {formatCurrency(totalSpent)}
                   </h2>
 
                   <p className="text-gray-500 text-sm">
@@ -566,7 +587,7 @@ export default function ExpenseBreakdown() {
 
               <div className="space-y-5">
 
-                {expenseData.map((item, index) => (
+                {expenses.map((item, index) => (
                   <div
                     key={index}
                     className="

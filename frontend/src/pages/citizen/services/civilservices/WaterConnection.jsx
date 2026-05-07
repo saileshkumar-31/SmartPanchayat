@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function WaterConnection() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function WaterConnection() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.name || !formData.location) {
@@ -32,9 +33,13 @@ export default function WaterConnection() {
       return;
     }
 
-    console.log(formData);
-    alert("Water Connection Request Submitted!");
-    navigate("/applicationtracker");
+    try {
+      const res = await submitApplication("Water Connection", "Civil Service", formData);
+      alert(`Water Connection Request Submitted! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/transparency/Sidebar";
+import { api } from "../../lib/api";
 
 const completedProjects = [
   {
@@ -25,6 +27,25 @@ const completedProjects = [
 ];
 
 const Completed = () => {
+  const [rows, setRows] = useState(completedProjects);
+
+  useEffect(() => {
+    api.get("/transparency/projects")
+      .then((res) => {
+        const dynamicRows = res.data
+          .filter((item) => item.category === "Completed" || item.status === "Completed")
+          .map((item, index) => ({
+            id: index + 1,
+            name: item.title,
+            ward: item.location || "-",
+            budget: `₹ ${Number(item.budget).toLocaleString("en-IN")}`,
+            completed: item.end_date ? new Date(item.end_date).toLocaleDateString() : "-",
+          }));
+        if (dynamicRows.length) setRows(dynamicRows);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-[#f5f7fb]">
       <Sidebar />
@@ -46,7 +67,7 @@ const Completed = () => {
             </thead>
 
             <tbody>
-              {completedProjects.map((project) => (
+              {rows.map((project) => (
                 <tr key={project.id} className="border-b hover:bg-gray-50">
                   <td className="p-4">{project.name}</td>
                   <td className="p-4">{project.ward}</td>

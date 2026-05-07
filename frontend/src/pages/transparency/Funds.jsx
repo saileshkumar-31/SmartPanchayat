@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "../../components/transparency/Sidebar";
+import { api } from "../../lib/api";
 
 const fundsData = [
   {
@@ -38,6 +40,26 @@ const fundsData = [
 
 const Funds = () => {
   const { t } = useTranslation();
+  const [funds, setFunds] = useState(fundsData);
+  const [totalFunds, setTotalFunds] = useState("₹ 0");
+
+  useEffect(() => {
+    api.get("/transparency/budgets")
+      .then((res) => {
+        if (!res.data.length) return;
+        const rows = res.data.map((item, index) => ({
+          id: index + 1,
+          source: item.category,
+          scheme: item.title,
+          amount: `₹ ${Number(item.allocated).toLocaleString("en-IN")}`,
+          date: item.year || "-",
+          remarks: item.status,
+        }));
+        setFunds(rows);
+        setTotalFunds(`₹ ${res.data.reduce((sum, item) => sum + item.allocated, 0).toLocaleString("en-IN")}`);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="flex bg-[#f3f4f6] min-h-screen">
@@ -74,7 +96,7 @@ const Funds = () => {
             </p>
 
             <h2 className="text-3xl font-bold text-green-700 mt-2">
-              ₹ 1,00,50,000
+              {totalFunds}
             </h2>
           </div>
 
@@ -130,7 +152,7 @@ const Funds = () => {
               </thead>
 
               <tbody>
-                {fundsData.map((fund) => (
+                {funds.map((fund) => (
                   <tr
                     key={fund.id}
                     className="border-t hover:bg-gray-50"

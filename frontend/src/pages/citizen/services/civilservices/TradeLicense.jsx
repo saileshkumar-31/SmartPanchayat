@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function TradeLicense() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function TradeLicense() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.ownerName || !formData.mobile || !formData.businessName) {
@@ -34,10 +35,16 @@ export default function TradeLicense() {
       return;
     }
 
-    console.log(formData);
-    alert("Trade License Request Submitted!");
-
-    navigate("/applicationtracker");
+    try {
+      const res = await submitApplication("Trade License", "Civil Service", {
+        ...formData,
+        name: formData.ownerName,
+      });
+      alert(`Trade License Request Submitted! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

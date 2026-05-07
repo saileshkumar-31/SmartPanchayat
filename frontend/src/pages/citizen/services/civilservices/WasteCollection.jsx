@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function WasteCollection() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function WasteCollection() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.name || !formData.mobile || !formData.location) {
@@ -28,10 +29,13 @@ export default function WasteCollection() {
       return;
     }
 
-    console.log(formData);
-    alert("Waste Collection Request Submitted!");
-
-    navigate("/applicationtracker");
+    try {
+      const res = await submitApplication("Waste Collection", "Civil Service", formData);
+      alert(`Waste Collection Request Submitted! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

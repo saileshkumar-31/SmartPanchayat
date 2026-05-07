@@ -10,14 +10,24 @@ import {
   CircleDashed,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { api } from "../../../lib/api";
 
 const ApplicationTracker = () => {
   const [referenceNo, setReferenceNo] = useState("");
   const [searched, setSearched] = useState(false);
+  const [application, setApplication] = useState(null);
 
-  const handleTrack = () => {
+  const handleTrack = async () => {
     if (!referenceNo.trim()) return;
-    setSearched(true);
+    try {
+      const res = await api.get(`/applications/reference/${referenceNo.trim()}`);
+      setApplication(res.data);
+      setSearched(true);
+    } catch (error) {
+      setApplication(null);
+      setSearched(true);
+      alert(error.message);
+    }
   };
 
   const openOfficialTracker = () => {
@@ -107,7 +117,7 @@ const ApplicationTracker = () => {
         </div>
 
         {/* Results */}
-        {searched && (
+        {searched && application && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 mb-8">
             <h3 className="text-2xl font-bold text-green-800 mb-6">
               Application Status
@@ -119,7 +129,7 @@ const ApplicationTracker = () => {
                   Reference Number
                 </p>
                 <p className="font-bold text-gray-800 break-all">
-                  {referenceNo}
+                  {application.reference_no}
                 </p>
               </div>
 
@@ -128,7 +138,7 @@ const ApplicationTracker = () => {
                   Application Type
                 </p>
                 <p className="font-bold text-gray-800">
-                  Certificate Request
+                  {application.service_name}
                 </p>
               </div>
 
@@ -137,7 +147,7 @@ const ApplicationTracker = () => {
                   Current Status
                 </p>
                 <p className="font-bold text-blue-700">
-                  Under Verification
+                  {application.status}
                 </p>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -17,63 +17,47 @@ import {
 import { NavLink } from "react-router-dom";
 
 import AdminLayout from "../../../components/admin/AdminLayout";
+import { api } from "../../../lib/api";
 
 export default function MeetingSchedule() {
 
   // Dynamic State
-  const [meetings, setMeetings] = useState([
-    {
-      id: "MTG-1001",
-      title: "Gram Sabha Meeting",
-      date: "18 May 2026",
-      time: "10:00 AM",
-      location: "Community Hall",
-      participants: 82,
-      organizer: "Panchayat Office",
-      status: "Upcoming",
-    },
-    {
-      id: "MTG-1002",
-      title: "Budget Planning Discussion",
-      date: "20 May 2026",
-      time: "02:30 PM",
-      location: "Panchayat Office",
-      participants: 34,
-      organizer: "Finance Committee",
-      status: "Scheduled",
-    },
-    {
-      id: "MTG-1003",
-      title: "Water Supply Review",
-      date: "22 May 2026",
-      time: "11:00 AM",
-      location: "Ward 5 Office",
-      participants: 26,
-      organizer: "Water Department",
-      status: "Completed",
-    },
-    {
-      id: "MTG-1004",
-      title: "Health Awareness Program",
-      date: "25 May 2026",
-      time: "09:30 AM",
-      location: "Primary School",
-      participants: 64,
-      organizer: "Public Health Department",
-      status: "Upcoming",
-    },
-  ]);
+  const [meetings, setMeetings] = useState([]);
+
+  const loadMeetings = async () => {
+    const res = await api.get("/meetings");
+    setMeetings(
+      res.data.map((item) => ({
+        id: item.meeting_id,
+        title: item.title,
+        date: new Date(item.date).toLocaleDateString(),
+        rawDate: item.date,
+        time: item.time,
+        location: item.venue,
+        participants: item.attendees,
+        organizer: item.type,
+        status: item.status,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    loadMeetings().catch((error) => alert(error.message));
+  }, []);
 
   // Status Update
-  const updateStatus = (id, newStatus) => {
-
-    setMeetings((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: newStatus }
-          : item
-      )
-    );
+  const updateStatus = async (id, newStatus) => {
+    const meeting = meetings.find((item) => item.id === id);
+    await api.put(`/meetings/${id}`, {
+      title: meeting.title,
+      date: meeting.rawDate,
+      time: meeting.time,
+      venue: meeting.location,
+      type: meeting.organizer,
+      attendees: meeting.participants,
+      status: newStatus,
+    });
+    await loadMeetings();
   };
 
   const statusStyle = {

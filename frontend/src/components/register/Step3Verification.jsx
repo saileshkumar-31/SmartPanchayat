@@ -1,9 +1,37 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { api } from "../../lib/api";
 
 const Step3Verification = () => {
   const navigate = useNavigate();
+  const completeRegistration = async () => {
+    const personal = JSON.parse(sessionStorage.getItem("registration_personal") || "{}");
+    const panchayat = JSON.parse(sessionStorage.getItem("registration_panchayat") || "{}");
+
+    try {
+      await api.post("/auth/register", {
+        ...personal,
+        user_panchayat: panchayat.panchayat,
+        user_address: [
+          panchayat.houseNo,
+          panchayat.village,
+          panchayat.ward,
+          panchayat.taluk,
+          panchayat.district,
+          panchayat.state,
+          panchayat.pinCode,
+        ]
+          .filter(Boolean)
+          .join(", "),
+      });
+      sessionStorage.removeItem("registration_personal");
+      sessionStorage.removeItem("registration_panchayat");
+      navigate("/success");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8">
@@ -94,7 +122,7 @@ const Step3Verification = () => {
           Back to Panchayat Details
         </button>
 
-        <button className="px-6 py-3 bg-green-700 text-white rounded-lg text-sm sm:text-base"  onClick={() => navigate("/success")}>
+        <button className="px-6 py-3 bg-green-700 text-white rounded-lg text-sm sm:text-base" onClick={completeRegistration}>
           Complete Registration
         </button>
       </div>

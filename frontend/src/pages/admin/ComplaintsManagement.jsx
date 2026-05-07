@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -12,71 +12,42 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
+import { api } from "../../lib/api";
 
 export default function ComplaintsManagement() {
 
   // Dynamic State
-  const [complaints, setComplaints] = useState([
-    {
-      id: "CMP-1001",
-      citizen: "Sailesh Kumar",
-      issue: "Streetlight Not Working",
-      location: "Ward 3",
-      date: "14 May 2026",
-      priority: "High",
-      status: "Pending",
-    },
-    {
-      id: "CMP-1002",
-      citizen: "Arun Kumar",
-      issue: "Water Leakage",
-      location: "Ward 1",
-      date: "13 May 2026",
-      priority: "Medium",
-      status: "In Progress",
-    },
-    {
-      id: "CMP-1003",
-      citizen: "Priya",
-      issue: "Garbage Collection Delay",
-      location: "Ward 5",
-      date: "12 May 2026",
-      priority: "Low",
-      status: "Resolved",
-    },
-    {
-      id: "CMP-1004",
-      citizen: "Kavin",
-      issue: "Road Damage",
-      location: "Ward 2",
-      date: "11 May 2026",
-      priority: "High",
-      status: "Rejected",
-    },
-  ]);
+  const [complaints, setComplaints] = useState([]);
 
-  // Dynamic Status Update
-  const updateStatus = (id, newStatus) => {
-
-    setComplaints((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: newStatus }
-          : item
-      )
+  const loadComplaints = async () => {
+    const res = await api.get("/complaints");
+    setComplaints(
+      res.data.map((item) => ({
+        id: item.complaint_id,
+        reference: item.reference_no,
+        citizen: item.citizen?.user_name || "Guest Citizen",
+        issue: item.subject,
+        location: item.location,
+        priority: item.priority,
+        status: item.status,
+      }))
     );
   };
 
-  // Dynamic Priority Update
-  const updatePriority = (id, newPriority) => {
+  useEffect(() => {
+    loadComplaints().catch((error) => alert(error.message));
+  }, []);
 
-    setComplaints((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, priority: newPriority }
-          : item
-      )
-    );
+  // Dynamic Status Update
+  const updateStatus = async (id, newStatus) => {
+    await api.patch(`/complaints/${id}`, { status: newStatus });
+    await loadComplaints();
+  };
+
+  // Dynamic Priority Update
+  const updatePriority = async (id, newPriority) => {
+    await api.patch(`/complaints/${id}`, { priority: newPriority });
+    await loadComplaints();
   };
 
   const statusStyle = {
@@ -306,7 +277,7 @@ export default function ComplaintsManagement() {
 
                   {/* ID */}
                   <td className="p-6 font-semibold text-[#13284c]">
-                    {item.id}
+                    {item.reference}
                   </td>
 
                   {/* Citizen */}

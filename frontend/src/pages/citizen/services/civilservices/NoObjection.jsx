@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function NOCRequest() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function NOCRequest() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.applicantName || !formData.mobile || !formData.address) {
@@ -33,10 +34,17 @@ export default function NOCRequest() {
       return;
     }
 
-    console.log(formData);
-    alert("NOC Request Submitted Successfully!");
-
-    navigate("/applicationtracker");
+    try {
+      const res = await submitApplication("No Objection Certificate", "Civil Service", {
+        ...formData,
+        name: formData.applicantName,
+        location: formData.address,
+      });
+      alert(`NOC Request Submitted Successfully! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

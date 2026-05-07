@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Scheduled from "./components/Scheduled";
@@ -6,15 +6,30 @@ import Request from "./components/Requests";
 import Notices from "./components/Notices";
 import Minutes from "./components/Minutes";
 import Calendar from "./components/Calendar";
+import { api } from "../../../../lib/api";
 
 export default function Meetings() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("scheduled");
+  const [meetings, setMeetings] = useState([]);
 
-  const meetings = [];
   const requests = [];
   const notices = [];
   const minutes = [];
+
+  useEffect(() => {
+    api.get("/meetings")
+      .then((res) => {
+        setMeetings(
+          res.data.map((item) => ({
+            ...item,
+            date: new Date(item.date).toLocaleDateString(),
+            status: item.status?.toLowerCase() || "upcoming",
+          }))
+        );
+      })
+      .catch(() => setMeetings([]));
+  }, []);
 
   const tabs = [
     { key: "scheduled", label: t("scheduled") },

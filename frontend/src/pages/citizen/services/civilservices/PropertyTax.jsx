@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitApplication } from "../../../../lib/applications";
 
 export default function PropertyTax() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default function PropertyTax() {
     setFormData({ ...formData, taxAmount: tax });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.propertyId || !formData.ownerName) {
@@ -38,7 +39,16 @@ export default function PropertyTax() {
       return;
     }
 
-    alert("Payment Successful!");
+    try {
+      const res = await submitApplication("Property Tax Payment", "Civil Service", {
+        ...formData,
+        name: formData.ownerName,
+      });
+      alert(`Payment Successful! Reference: ${res.data.reference_no}`);
+      navigate("/applicationtracker");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ import {
   Upload,
   Send,
 } from "lucide-react";
+import { submitComplaint } from "../../../lib/complaints";
 
 const OtherComplaint = () => {
   const [formData, setFormData] = useState({
@@ -26,11 +27,15 @@ const OtherComplaint = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
-    alert("Complaint submitted successfully.");
+    try {
+      const res = await submitComplaint("Other", formData);
+      alert(`Complaint submitted. Reference: ${res.data.reference_no}`);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

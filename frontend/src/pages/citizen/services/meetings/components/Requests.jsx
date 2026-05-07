@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { api, getCurrentUser } from "../../../../../lib/api";
 
 export default function Request() {
 const { t } = useTranslation();
@@ -16,9 +17,22 @@ const handleChange = (e) => {
 setForm({ ...form, [e.target.name]: e.target.value });
 };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
 e.preventDefault();
-console.log(form); // backend later
+try {
+const user = getCurrentUser();
+await api.post("/meeting-requests", {
+title: form.title,
+description: form.description,
+preferred_date: form.date,
+location: form.venue,
+citizen_id: user?.user_id,
+});
+alert("Meeting request submitted.");
+setForm({ title: "", description: "", date: "", time: "", venue: "" });
+} catch (error) {
+alert(error.message);
+}
 };
 
 return ( <div className="max-w-3xl mx-auto">

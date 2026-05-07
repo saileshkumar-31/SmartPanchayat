@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import {
@@ -10,8 +10,10 @@ import {
   Briefcase,
   ArrowRight,
 } from "lucide-react";
+import { api } from "../../lib/api";
+import { useTranslation } from "react-i18next";
 
-const schemes = [
+const defaultSchemes = [
   {
     title: "Housing Scheme",
     desc: "Affordable housing support for eligible rural families.",
@@ -57,6 +59,29 @@ const schemes = [
 ];
 
 const Schemes = () => {
+  const { i18n, t } = useTranslation();
+  const [schemes, setSchemes] = useState(defaultSchemes);
+
+  useEffect(() => {
+    api.get("/schemes")
+      .then((res) => {
+        if (!res.data.length) return;
+        setSchemes(
+          res.data.map((item, index) => ({
+            title: i18n.language === "ta" && item.title_ta ? item.title_ta : item.title,
+            desc:
+              i18n.language === "ta" && item.description_ta
+                ? item.description_ta
+                : item.description,
+            icon: defaultSchemes[index % defaultSchemes.length].icon,
+            color: defaultSchemes[index % defaultSchemes.length].color,
+            link: `/schemes/${item.slug}`,
+          }))
+        );
+      })
+      .catch(() => {});
+  }, [i18n.language]);
+
   return (
     <section className="w-full bg-gradient-to-b from-[#f8fff6] to-white min-h-screen py-16 px-4 sm:px-6 lg:px-10">
       
@@ -64,16 +89,15 @@ const Schemes = () => {
       <div className="max-w-7xl mx-auto text-center mb-14">
 
         <p className="text-green-700 font-semibold tracking-widest uppercase mb-2">
-          Government Benefits
+          {t("governmentBenefits")}
         </p>
 
         <h1 className="text-4xl sm:text-5xl font-bold text-[#13284c] leading-tight">
-          Welfare <span className="text-green-700">Schemes</span>
+          {t("welfare")} <span className="text-green-700">{t("schemes")}</span>
         </h1>
 
         <p className="mt-5 text-gray-600 text-lg max-w-2xl mx-auto">
-          Explore public welfare schemes available for citizens. Apply easily
-          and track your eligibility through Smart Panchayat.
+          {t("schemesIntro")}
         </p>
       </div>
 
@@ -113,7 +137,7 @@ const Schemes = () => {
                 to={item.link}
                 className="flex items-center gap-2 text-green-700 font-semibold group-hover:gap-3 transition-all"
               >
-                View Details
+                {t("viewDetails")}
                 <ArrowRight size={18} />
               </NavLink>
             </div>

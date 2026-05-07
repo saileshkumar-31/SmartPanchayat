@@ -7,6 +7,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../lib/api";
 
 import bgImg from "../../assets/forgotpass/bg.png";
 
@@ -16,9 +17,11 @@ const ForgotPassword = () => {
   const [method, setMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (method === "email" && email.trim() === "") {
       alert("Enter your email");
       return;
@@ -29,17 +32,31 @@ const ForgotPassword = () => {
       return;
     }
 
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      await api.post("/auth/forgot-password", {
+        email: method === "email" ? email : undefined,
+        mobile: method === "mobile" ? mobile : undefined,
+        password,
+      });
       setLoading(false);
-
-      if (method === "email") {
-        alert("Reset link sent successfully");
-      } else {
-        alert("OTP sent successfully");
-      }
-    }, 1500);
+      alert("Password reset successfully");
+      navigate("/citizen");
+    } catch (error) {
+      setLoading(false);
+      alert(error.message);
+    }
   };
 
   const handleBackLogin = () => {
@@ -163,6 +180,32 @@ const ForgotPassword = () => {
                 </div>
               )}
 
+              <div className="mb-6">
+                <label className="font-semibold text-gray-700 block mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter new password"
+                  className="w-full border border-gray-200 rounded-xl h-14 px-4 outline-none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="font-semibold text-gray-700 block mb-2">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Confirm new password"
+                  className="w-full border border-gray-200 rounded-xl h-14 px-4 outline-none"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+
               {/* SEND BUTTON */}
               <button
                 onClick={handleSend}
@@ -173,9 +216,7 @@ const ForgotPassword = () => {
 
                 {loading
                   ? "Please wait..."
-                  : method === "email"
-                  ? "Send Reset Link"
-                  : "Send OTP"}
+                  : "Reset Password"}
               </button>
 
               {/* BACK BUTTON */}
