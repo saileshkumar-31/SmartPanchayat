@@ -72,18 +72,40 @@ import PensionScheme from "../pages/public/schemes/PensionScheme.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import ApplicationsManagement from "../pages/admin/ApplicationsManagement.jsx";
 import ComplaintsManagement from "../pages/admin/ComplaintsManagement.jsx";
-import UsersManagement from "../pages/admin/UsersManagement.jsx";
+import UsersManagement from "../pages/admin/users/UsersManagement.jsx";
 import CertificateManagement from "../pages/admin/CertificatesManagement.jsx"
-import MeetingsManagement from "../pages/admin/MeetingsManagement.jsx";
+import MeetingsManagement from "../pages/admin/meetings/MeetingsManagement.jsx";
 import ReportsAnalytics from "../pages/admin/ReportsAnalytics.jsx";
 import SchemesManagement from "../pages/admin/SchemesManagement.jsx";
 import Settings from "../pages/admin/Settings.jsx";
 import TransparencyManagement from "../pages/admin/TransparencyManagement.jsx";
-import BudgetManagement from "../pages/admin/transparency/BudgetManagement.jsx";
-import CompletedProjectsManagement from "../pages/admin/transparency/CompletedProjectsManagement.jsx";
-import ExpensesManagement from "../pages/admin/transparency/ExpensesManagement.jsx";
-import RecentUpdatesManagement from "../pages/admin/transparency/RecentUpdatesManagement.jsx";
-import TenderManagement from "../pages/admin/transparency/TenderManagement.jsx";
+import BudgetManagement from "../pages/admin/transparency/budget/BudgetManagement.jsx";
+import CompletedProjectsManagement from "../pages/admin/transparency/completes/CompletedProjectsManagement.jsx";
+import ExpensesManagement from "../pages/admin/transparency/expenses/ExpensesManagement.jsx";
+import RecentUpdatesManagement from "../pages/admin/transparency/recentupdates/RecentUpdatesManagement.jsx";
+import TenderManagement from "../pages/admin/transparency/tender/TenderManagement.jsx";
+import BudgetEdit from "../pages/admin/transparency/budget/BudgetEdit.jsx";
+import AddBudget from "../pages/admin/transparency/budget/AddBudget.jsx";
+import OngoingProjectsManagement from "../pages/admin/transparency/ongoing/OngoingProjectsManagement.jsx";
+import AddOngoingProject from "../pages/admin/transparency/ongoing/AddOngoingProject.jsx";
+import EditOngoingProject from "../pages/admin/transparency/ongoing/EditOngoingProject.jsx";
+import EditTender from "../pages/admin/transparency/tender/EditTender.jsx";
+import CreateTender from "../pages/admin/transparency/tender/CreateTender.jsx";
+import AddExpenses from "../pages/admin/transparency/expenses/AddExpenses.jsx"
+import EditExpense from "../pages/admin/transparency/expenses/EditExpenses.jsx";
+import AddRecentUpdates from "../pages/admin/transparency/recentupdates/AddRecentUpdates.jsx"
+import EditRecentUpdate from "../pages/admin/transparency/recentupdates/EditRecentUpdates.jsx";
+import MeetingsDashboard from "../pages/admin/meetings/MeetingsManagement.jsx";
+import MeetingRequests from "../pages/admin/meetings/MeetingsRequest.jsx";
+import MeetingSchedule from "../pages/admin/meetings/MeetingsScheduled.jsx";
+import AddMeeting from "../pages/admin/meetings/Addmeeting.jsx";
+import EditMeeting from "../pages/admin/meetings/Editmeeting.jsx";
+import TransparencyReports from "../pages/admin/reports/TransparencyReports.jsx";
+import AddTransparencyReport from "../pages/admin/reports/AddTransparencyReport.jsx"
+import EditTransparencyReport from "../pages/admin/reports/EditTransparencyReport.jsx";
+import AddUsers from "../pages/admin/users/AddUsers.jsx"
+import EditUser from "../pages/admin/users/EditUser.jsx";
+import MeetingCalendarView from "../pages/admin/meetings/MeetingCalendar.jsx";
 
 
 
@@ -357,6 +379,14 @@ const Routes = createBrowserRouter([
         element: <UsersManagement />,
       },
       {
+        path: "admin/users-add",
+        element: <AddUsers/>,
+      },
+      {
+        path: "admin/users-edit",
+        element: <EditUser/>,
+      },
+      {
         path: "admin/certificate-management",
         element: <CertificateManagement />,
       },
@@ -381,21 +411,103 @@ const Routes = createBrowserRouter([
         element: <BudgetManagement />,
       },
       {
+        path: "admin/transparency/budget-edit",
+        element: <BudgetEdit />,
+      },
+      {
+        path: "admin/transparency/budget-create",
+        element: <AddBudget />,
+      },
+      {
         path: "admin/transparency/completedprojects-management",
         element: <CompletedProjectsManagement />,
+      },
+      {
+        path: "admin/transparency/ongoingprojects-management",
+        element: <OngoingProjectsManagement />,
+      },
+      {
+        path: "admin/transparency/ongoingprojects-create",
+        element: <AddOngoingProject />,
+      },
+      {
+        path: "admin/transparency/ongoingprojects-edit",
+        element: <EditOngoingProject />,
       },
       {
         path: "admin/transparency/expenses-management",
         element: <ExpensesManagement />,
       },
       {
+        path: "admin/transparency/expenses-create",
+        element: <AddExpenses />,
+      },
+      {
+        path: "admin/transparency/expenses-edit",
+        element: <EditExpense />,
+      },
+      {
         path: "admin/transparency/recentupdates-management",
         element: <RecentUpdatesManagement />,
+      },
+      {
+        path: "admin/transparency/recentupdates-create",
+        element: <AddRecentUpdates />,
+      },
+      {
+        path: "admin/transparency/recentupdates-edit",
+        element: <EditRecentUpdate />,
+      },
+      {
+        path: "admin/transparency/reports",
+        element: <TransparencyReports />,
+      },
+      {
+        path: "admin/transparency/reports-add",
+        element: <AddTransparencyReport />,
+      },
+      {
+        path: "admin/transparency/reports-edit",
+        element: <EditTransparencyReport />,
       },
       {
         path: "admin/transparency/tender-management",
         element: <TenderManagement />,
       },
+      {
+        path: "admin/transparency/tender-edit",
+        element: <EditTender />,
+      },
+      {
+        path: "admin/transparency/tender-create",
+        element: <CreateTender />,
+      },
+      {
+        path: "admin/meetings",
+        element: <MeetingsDashboard />,
+      },
+      {
+        path: "admin/meetings-requests",
+        element: <MeetingRequests />,
+      },
+      {
+        path: "admin/meetings-schedule",
+        element: <MeetingSchedule />,
+      },
+      {
+        path: "admin/meetings-add",
+        element: <AddMeeting />,
+      },
+      {
+        path: "admin/meetings-edit",
+        element: <EditMeeting />,
+      },
+      {
+        path: "admin/meetings-calendarview",
+        element: <MeetingCalendarView />,
+      },
+
+
 
 
     ],

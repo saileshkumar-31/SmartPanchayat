@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   MapPin,
   MessageSquareWarning,
+  XCircle,
 } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
@@ -50,11 +51,11 @@ export default function ComplaintsManagement() {
       location: "Ward 2",
       date: "11 May 2026",
       priority: "High",
-      status: "Pending",
+      status: "Rejected",
     },
   ]);
 
-  // Dynamic Update
+  // Dynamic Status Update
   const updateStatus = (id, newStatus) => {
 
     setComplaints((prev) =>
@@ -66,10 +67,23 @@ export default function ComplaintsManagement() {
     );
   };
 
+  // Dynamic Priority Update
+  const updatePriority = (id, newPriority) => {
+
+    setComplaints((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, priority: newPriority }
+          : item
+      )
+    );
+  };
+
   const statusStyle = {
     Pending: "bg-red-100 text-red-700",
     "In Progress": "bg-yellow-100 text-yellow-700",
     Resolved: "bg-green-100 text-green-700",
+    Rejected: "bg-gray-200 text-gray-700",
   };
 
   const priorityStyle = {
@@ -91,6 +105,10 @@ export default function ComplaintsManagement() {
 
   const resolvedCount = complaints.filter(
     (item) => item.status === "Resolved"
+  ).length;
+
+  const rejectedCount = complaints.filter(
+    (item) => item.status === "Rejected"
   ).length;
 
   return (
@@ -131,7 +149,7 @@ export default function ComplaintsManagement() {
       </div>
 
       {/* Stats */}
-      <div className="grid md:grid-cols-4 gap-6 mb-10">
+      <div className="grid md:grid-cols-5 gap-6 mb-10">
 
         {/* Total */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
@@ -194,6 +212,22 @@ export default function ComplaintsManagement() {
 
           <h2 className="text-4xl font-bold text-green-600 mt-3">
             {resolvedCount}
+          </h2>
+        </div>
+
+        {/* Rejected */}
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-gray-600 to-gray-400 text-white flex items-center justify-center mb-5">
+            <XCircle size={24} />
+          </div>
+
+          <p className="text-gray-500">
+            Rejected
+          </p>
+
+          <h2 className="text-4xl font-bold text-gray-700 mt-3">
+            {rejectedCount}
           </h2>
         </div>
       </div>
@@ -295,14 +329,32 @@ export default function ComplaintsManagement() {
                     </div>
                   </td>
 
-                  {/* Priority */}
+                  {/* Editable Priority */}
                   <td className="p-6">
 
-                    <span
-                      className={`px-4 py-2 rounded-full text-sm font-semibold ${priorityStyle[item.priority]}`}
+                    <select
+                      value={item.priority}
+                      onChange={(e) =>
+                        updatePriority(
+                          item.id,
+                          e.target.value
+                        )
+                      }
+                      className={`px-4 py-2 rounded-full text-sm font-semibold outline-none border-0 ${priorityStyle[item.priority]}`}
                     >
-                      {item.priority}
-                    </span>
+
+                      <option value="High">
+                        High
+                      </option>
+
+                      <option value="Medium">
+                        Medium
+                      </option>
+
+                      <option value="Low">
+                        Low
+                      </option>
+                    </select>
                   </td>
 
                   {/* Status */}
@@ -325,10 +377,26 @@ export default function ComplaintsManagement() {
                         <Eye size={18} />
                       </button>
 
-                      {/* Progress */}
+                      {/* Pending */}
                       <button
                         onClick={() =>
-                          updateStatus(item.id, "In Progress")
+                          updateStatus(
+                            item.id,
+                            "Pending"
+                          )
+                        }
+                        className="w-11 h-11 rounded-xl bg-red-100 text-red-700 flex items-center justify-center hover:scale-105 transition"
+                      >
+                        <AlertTriangle size={18} />
+                      </button>
+
+                      {/* Approve / In Progress */}
+                      <button
+                        onClick={() =>
+                          updateStatus(
+                            item.id,
+                            "In Progress"
+                          )
                         }
                         className="w-11 h-11 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center hover:scale-105 transition"
                       >
@@ -338,11 +406,27 @@ export default function ComplaintsManagement() {
                       {/* Resolve */}
                       <button
                         onClick={() =>
-                          updateStatus(item.id, "Resolved")
+                          updateStatus(
+                            item.id,
+                            "Resolved"
+                          )
                         }
                         className="w-11 h-11 rounded-xl bg-green-100 text-green-700 flex items-center justify-center hover:scale-105 transition"
                       >
                         <CheckCircle2 size={18} />
+                      </button>
+
+                      {/* Reject */}
+                      <button
+                        onClick={() =>
+                          updateStatus(
+                            item.id,
+                            "Rejected"
+                          )
+                        }
+                        className="w-11 h-11 rounded-xl bg-gray-200 text-gray-700 flex items-center justify-center hover:scale-105 transition"
+                      >
+                        <XCircle size={18} />
                       </button>
                     </div>
                   </td>
