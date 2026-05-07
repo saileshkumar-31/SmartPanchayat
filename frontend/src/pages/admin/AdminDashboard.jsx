@@ -22,8 +22,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     api.get("/dashboard/summary")
-      .then((res) => setSummary(res.data))
-      .catch(() => {});
+      .then((res) => setSummary(res.data.data))
+      .catch((err) => console.error("Error fetching dashboard summary:", err));
   }, []);
 
   const stats = [
@@ -53,20 +53,41 @@ export default function AdminDashboard() {
     },
   ];
 
-  const activities = [
-    {
-      title: "Income Certificate Approved",
-      time: "10 mins ago",
-    },
-    {
-      title: "New Complaint Registered",
-      time: "25 mins ago",
-    },
-    {
-      title: "Tender Updated",
-      time: "1 hour ago",
-    },
-  ];
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    // Fetch recent activities for admin
+    const fetchActivities = async () => {
+      try {
+        // Fetch recent applications
+        const applicationsRes = await api.get("/applications");
+        const applications = applicationsRes.data.data || [];
+        const recentApps = applications.slice(0, 2).map(app => ({
+          title: `Application: ${app.service_name}`,
+          time: new Date(app.created_at).toLocaleDateString(),
+        }));
+
+        // Fetch recent complaints
+        const complaintsRes = await api.get("/complaints");
+        const complaints = complaintsRes.data.data || [];
+        const recentComplaints = complaints.slice(0, 2).map(complaint => ({
+          title: `Complaint: ${complaint.subject}`,
+          time: new Date(complaint.created_at).toLocaleDateString(),
+        }));
+
+        // Combine and sort by date
+        const allActivities = [...recentApps, ...recentComplaints]
+          .sort((a, b) => new Date(b.time) - new Date(a.time))
+          .slice(0, 3);
+
+        setActivities(allActivities);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
+
+    fetchActivities();
+  }, []);
 
   return (
     <AdminLayout>

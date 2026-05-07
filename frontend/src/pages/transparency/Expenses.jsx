@@ -10,79 +10,52 @@ import {
   Tooltip,
 } from "recharts";
 
-const expenseData = [
-  {
-    category: "Roads",
-    allocated: 4000000,
-    spent: 3600000,
-    utilization: 90,
-    color: "#2563eb",
-  },
-  {
-    category: "Water Supply",
-    allocated: 3000000,
-    spent: 2400000,
-    utilization: 80,
-    color: "#22c55e",
-  },
-  {
-    category: "Sanitation",
-    allocated: 1500000,
-    spent: 1200000,
-    utilization: 80,
-    color: "#f59e0b",
-  },
-  {
-    category: "Education",
-    allocated: 1000000,
-    spent: 850000,
-    utilization: 85,
-    color: "#8b5cf6",
-  },
-  {
-    category: "Healthcare",
-    allocated: 900000,
-    spent: 700000,
-    utilization: 77,
-    color: "#ef4444",
-  },
-  {
-    category: "Others",
-    allocated: 1200000,
-    spent: 850000,
-    utilization: 72,
-    color: "#14b8a6",
-  },
-];
 
 const formatCurrency = (value) => {
   return `₹${value.toLocaleString("en-IN")}`;
 };
 
 export default function ExpenseBreakdown() {
-  const [expenses, setExpenses] = useState(expenseData);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const totalSpent = useMemo(
     () => expenses.reduce((acc, item) => acc + item.spent, 0),
     [expenses]
   );
 
   useEffect(() => {
-    api.get("/transparency/expenses")
+    api.get("/transparency/budgets")
       .then((res) => {
         if (!res.data.length) return;
         const colors = ["#2563eb", "#22c55e", "#f59e0b", "#8b5cf6", "#ef4444", "#14b8a6"];
-        setExpenses(
-          res.data.map((item, index) => ({
-            category: item.category,
-            allocated: item.amount,
-            spent: item.amount,
-            utilization: 100,
-            color: colors[index % colors.length],
-          }))
-        );
+        const budgetData = res.data.map((item, index) => ({
+          category: item.category,
+          allocated: item.allocated,
+          spent: item.spent,
+          utilization: item.allocated > 0 ? Math.round((item.spent / item.allocated) * 100) : 0,
+          color: colors[index % colors.length],
+        }));
+        setExpenses(budgetData);
+        setLoading(false);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Error fetching budget data:", err);
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading expense data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

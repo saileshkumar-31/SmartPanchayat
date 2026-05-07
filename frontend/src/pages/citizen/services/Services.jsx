@@ -1,4 +1,4 @@
-import { useState, useMemo  } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import {
   Search,
@@ -14,16 +14,22 @@ import {
   Phone,
   Megaphone,
   ArrowRight,
+  MessageSquare,
+  Calendar,
+  AlertTriangle,
+  Award,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 import heroImg from "../../../assets/services/services.png";
+import { api } from "../../../lib/api";
 
 const Services = () => {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
+  const [categories, setCategories] = useState([]);
 
   // /* ---------------- LOGIN CHECK ---------------- */
   // const isLoggedIn = localStorage.getItem("token");
@@ -38,128 +44,200 @@ const Services = () => {
 const goProtected = (path) => {
   navigate(path);
 };
-  /* ---------------- DATA ---------------- */
-  const categories = [
-    {
-      title: "Certificates",
-      color: "text-green-700",
-      bg: "bg-green-100",
-      icon: FileText,
-      path: "/certificates",
-      items: [
-        "Income Certificate",
-        "Community Certificate",
-        "Nativity Certificate",
-        "Residence Certificate",
-        "First Graduate Certificate",
-      ],
-      button: "View All Certificates",
-    },
-    {
-      title: "Complaints & Grievances",
-      color: "text-blue-700",
-      bg: "bg-blue-100",
-      icon: MessageCircleWarning,
-      path: "/complaints",
-      items: [
-        "Raise Complaint",
-        "Track Complaint",
-        "Report Water Issue",
-        "Streetlight Issue",
-        "Sanitation Issue",
-      ],
-      button: "View All Complaints",
-    },
-    {
-      title: "Civic Services",
-      color: "text-orange-700",
-      bg: "bg-orange-100",
-      icon: Landmark,
-      path: "/civilservices",
-      items: [
-        "Birth Certificate Request",
-        "Death Certificate Request",
-        "Property Tax Information",
-        "Water Connection Request",
-        "Waste Collection Request",
-      ],
-      button: "View All Civic Services",
-    },
-    {
-      title: "Meetings & Participation",
-      color: "text-purple-700",
-      bg: "bg-purple-100",
-      icon: Users,
-      path: "/meetings",
-      items: [
-        "View Scheduled Meetings",
-        "Request Public Meeting",
-        "Gram Sabha Notices",
-        "Meeting Minutes",
-      ],
-      button: "View All Meetings",
-    },
-    {
-      title: "Transparency",
-      color: "text-green-800",
-      bg: "bg-green-100",
-      icon: BarChart3,
-      path: "/transparency",
-      items: [
-        "Panchayat Funds",
-        "Ongoing Projects",
-        "Completed Works",
-        "Budget Reports",
-      ],
-      button: "View All Reports",
-    },
-  ];
 
-  const quickActions = [
-    {
-      icon: PenSquare,
-      title: "Apply Now",
-      desc: "Start a new application",
-      path: "/certificates",
-    },
-    {
-      icon: BadgeCheck,
-      title: "Track Status",
-      desc: "Check application status",
-      path: "/citizen/services/application-status",
-    },
-    {
-      icon: Download,
-      title: "Download Forms",
-      desc: "Get required documents",
-      path: "/downloads",
-    },
-    {
-      icon: Phone,
-      title: "Contact Office",
-      desc: "Reach Panchayat office",
-      path: "/contact-us",
-    },
-  ];
+  /* ---------------- FETCH DATA ---------------- */
+  useEffect(() => {
+    // Fetch schemes from backend
+    api.get("/schemes")
+      .then((res) => {
+        const schemes = res.data.data || [];
+        // Transform schemes into categories format
+        const dynamicCategories = [
+          {
+            title: "Certificates",
+            color: "text-green-700",
+            bg: "bg-green-100",
+            icon: FileText,
+            path: "/certificates",
+            items: ["Income Certificate", "Community Certificate", "Nativity Certificate", "Residence Certificate", "First Graduate Certificate"],
+            button: "View All Certificates",
+          },
+          {
+            title: "Complaints & Grievances",
+            color: "text-blue-700",
+            bg: "bg-blue-100",
+            icon: MessageCircleWarning,
+            path: "/complaints",
+            items: ["Raise Complaint", "Track Complaint", "Report Water Issue", "Streetlight Issue", "Sanitation Issue"],
+            button: "View All Complaints",
+          },
+          {
+            title: "Civic Services",
+            color: "text-orange-700",
+            bg: "bg-orange-100",
+            icon: Landmark,
+            path: "/civilservices",
+            items: ["Birth Certificate Request", "Death Certificate Request", "Property Tax Information", "Water Connection Request", "Waste Collection Request"],
+            button: "View All Civic Services",
+          },
+          {
+            title: "Meetings & Participation",
+            color: "text-purple-700",
+            bg: "bg-purple-100",
+            icon: Users,
+            path: "/meetings",
+            items: ["View Scheduled Meetings", "Request Public Meeting", "Gram Sabha Notices", "Meeting Minutes"],
+            button: "View All Meetings",
+          },
+          {
+            title: "Government Schemes",
+            color: "text-indigo-700",
+            bg: "bg-indigo-100",
+            icon: BarChart3,
+            path: "/schemes",
+            items: schemes.slice(0, 5).map(scheme => scheme.title),
+            button: "View All Schemes",
+          },
+        ];
+        setCategories(dynamicCategories);
+      })
+      .catch((err) => {
+        console.error("Error fetching schemes:", err);
+        // Fallback to static categories if API fails
+        setCategories([
+          {
+            title: "Certificates",
+            color: "text-green-700",
+            bg: "bg-green-100",
+            icon: FileText,
+            path: "/certificates",
+            items: ["Income Certificate", "Community Certificate", "Nativity Certificate", "Residence Certificate", "First Graduate Certificate"],
+            button: "View All Certificates",
+          },
+          {
+            title: "Complaints & Grievances",
+            color: "text-blue-700",
+            bg: "bg-blue-100",
+            icon: MessageCircleWarning,
+            path: "/complaints",
+            items: ["Raise Complaint", "Track Complaint", "Report Water Issue", "Streetlight Issue", "Sanitation Issue"],
+            button: "View All Complaints",
+          },
+          {
+            title: "Civic Services",
+            color: "text-orange-700",
+            bg: "bg-orange-100",
+            icon: Landmark,
+            path: "/civilservices",
+            items: ["Birth Certificate Request", "Death Certificate Request", "Property Tax Information", "Water Connection Request", "Waste Collection Request"],
+            button: "View All Civic Services",
+          },
+          {
+            title: "Meetings & Participation",
+            color: "text-purple-700",
+            bg: "bg-purple-100",
+            icon: Users,
+            path: "/meetings",
+            items: ["View Scheduled Meetings", "Request Public Meeting", "Gram Sabha Notices", "Meeting Minutes"],
+            button: "View All Meetings",
+          },
+          {
+            title: "Government Schemes",
+            color: "text-indigo-700",
+            bg: "bg-indigo-100",
+            icon: BarChart3,
+            path: "/schemes",
+            items: ["Housing Scheme", "Farmer Welfare", "Education Support", "Health Insurance", "Employment Scheme"],
+            button: "View All Schemes",
+          },
+        ]);
+      });
+  }, []);
+
+  const [quickActions, setQuickActions] = useState([]);
+  const [loadingQuickActions, setLoadingQuickActions] = useState(true);
+
+  useEffect(() => {
+    const fetchQuickActions = async () => {
+      // Static fallback quick actions
+      const staticQuickActions = [
+        {
+          icon: PenSquare,
+          title: "Apply Now",
+          desc: "Start a new application",
+          path: "/certificates",
+        },
+        {
+          icon: BadgeCheck,
+          title: "Track Status",
+          desc: "Check application status",
+          path: "/applicationtracker",
+        },
+        {
+          icon: MessageSquare,
+          title: "Raise Complaint",
+          desc: "File a grievance",
+          path: "/complaints",
+        },
+        {
+          icon: Calendar,
+          title: "Meetings",
+          desc: "View upcoming meetings",
+          path: "/Meetings",
+        },
+      ];
+
+      try {
+        const res = await api.get("/quick-actions");
+        if (res.data && res.data.length > 0) {
+          // Map icon strings to Lucide icons
+          const iconMap = {
+            "FileText": FileText,
+            "AlertTriangle": AlertTriangle,
+            "Award": Award,
+            "Search": Search,
+            "Calendar": Calendar,
+            "MessageSquare": MessageSquare,
+            "PenSquare": PenSquare,
+            "BadgeCheck": BadgeCheck,
+          };
+
+          setQuickActions(res.data.map(action => ({
+            icon: iconMap[action.icon] || FileText,
+            title: action.title,
+            desc: action.description,
+            path: action.route,
+            color: action.color,
+          })));
+        } else {
+          setQuickActions(staticQuickActions);
+        }
+      } catch (error) {
+        console.error("Error fetching quick actions:", error);
+        setQuickActions(staticQuickActions);
+      } finally {
+        setLoadingQuickActions(false);
+      }
+    };
+
+    fetchQuickActions();
+  }, []);
 
   /* ---------------- SEARCH ---------------- */
   const handleSearch = () => {
     setSubmittedSearch(searchTerm.trim());
   };
 
-  const filteredCategories = useMemo(() => {
-    if (!submittedSearch) return categories;
-
-    const keyword = submittedSearch.toLowerCase();
-
-    return categories.filter(
-      (item) =>
-        item.title.toLowerCase().includes(keyword) ||
-        item.items.some((sub) =>
-          sub.toLowerCase().includes(keyword)
+  const filteredCategories = useMemo(
+    () =>
+      categories.filter((cat) =>
+        cat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cat.items.some((sub) =>
+          sub.toLowerCase().includes(searchTerm.toLowerCase())
         )
-    );
-  }, [submittedSearch]);
+      ),
+    [searchTerm, categories]
+  );
 
   return (
     <section className="min-h-screen bg-[#f6f8f6]">

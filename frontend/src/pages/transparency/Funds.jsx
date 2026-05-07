@@ -3,45 +3,11 @@ import { useTranslation } from "react-i18next";
 import Sidebar from "../../components/transparency/Sidebar";
 import { api } from "../../lib/api";
 
-const fundsData = [
-  {
-    id: 1,
-    source: "State Government",
-    scheme: "Village Development Scheme",
-    amount: "₹ 50,00,000",
-    date: "12 May 2026",
-    remarks: "Infrastructure",
-  },
-  {
-    id: 2,
-    source: "Central Government",
-    scheme: "Smart Panchayat Mission",
-    amount: "₹ 35,00,000",
-    date: "18 May 2026",
-    remarks: "Digital Services",
-  },
-  {
-    id: 3,
-    source: "NGO Funds",
-    scheme: "Clean Village Initiative",
-    amount: "₹ 10,00,000",
-    date: "22 May 2026",
-    remarks: "Sanitation",
-  },
-  {
-    id: 4,
-    source: "Public Donations",
-    scheme: "Community Welfare",
-    amount: "₹ 5,50,000",
-    date: "25 May 2026",
-    remarks: "Public Support",
-  },
-];
-
 const Funds = () => {
   const { t } = useTranslation();
-  const [funds, setFunds] = useState(fundsData);
+  const [funds, setFunds] = useState([]);
   const [totalFunds, setTotalFunds] = useState("₹ 0");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get("/transparency/budgets")
@@ -52,14 +18,37 @@ const Funds = () => {
           source: item.category,
           scheme: item.title,
           amount: `₹ ${Number(item.allocated).toLocaleString("en-IN")}`,
-          date: item.year || "-",
-          remarks: item.status,
+          date: new Date(item.created_at).toLocaleDateString(),
+          remarks: item.status || "Active",
         }));
         setFunds(rows);
-        setTotalFunds(`₹ ${res.data.reduce((sum, item) => sum + item.allocated, 0).toLocaleString("en-IN")}`);
+        
+        // Calculate total funds
+        const total = res.data.reduce((sum, item) => sum + item.allocated, 0);
+        setTotalFunds(`₹ ${Number(total).toLocaleString("en-IN")}`);
+        setLoading(false);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Error fetching funds data:", err);
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-[#f5f7fb]">
+        <Sidebar />
+        <div className="flex-1 p-8">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading funds data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex bg-[#f3f4f6] min-h-screen">

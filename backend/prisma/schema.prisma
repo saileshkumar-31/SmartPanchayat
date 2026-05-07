@@ -201,6 +201,53 @@ model TransparencyReport {
   updated_at  DateTime @updatedAt
 }
 
+model CivilService {
+  service_id    String @id @default(uuid())
+  title         String
+  description   String
+  category      String
+  process_time  String?
+  fee           Float @default(0)
+  required_docs String?
+  status        String @default("Active")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model Certificate {
+  certificate_id         String @id @default(uuid())
+  title                  String
+  description            String
+  category               String
+  process_time           String?
+  fee                    Float @default(0)
+  required_docs          String?
+  status                 String @default("Active")
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  requirements           CertificateRequirement[]
+  eligibility            CertificateEligibility[]
+}
+
+model PanchayatStats {
+  stats_id   String @id @default(uuid())
+  metric     String
+  value      String
+  label      String
+  updated_at DateTime @default(now())
+}
+
+model PanchayatValue {
+  value_id   String @id @default(uuid())
+  title      String
+  description String
+  icon       String?
+  order      Int @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
 model SiteSettings {
   settings_id         String @id @default("default")
   notifications       Boolean @default(true)
@@ -211,4 +258,64 @@ model SiteSettings {
   autoApproval        Boolean @default(false)
   restrictionMessage  String @default("Smart Panchayat is temporarily restricted by the administrator.")
   updated_at          DateTime @updatedAt
+}
+
+model CertificateRequirement {
+  requirement_id    String @id @default(uuid())
+  certificate_id    String
+  document_type     String
+  is_required       Boolean @default(true)
+  order             Int @default(0)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  certificate Certificate @relation(fields: [certificate_id], references: [certificate_id], onDelete: Cascade)
+}
+
+model CertificateEligibility {
+  eligibility_id    String @id @default(uuid())
+  certificate_id     String
+  requirement        String
+  order              Int @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  certificate Certificate @relation(fields: [certificate_id], references: [certificate_id], onDelete: Cascade)
+}
+
+model MeetingTab {
+  tab_id     String @id @default(uuid())
+  key        String @unique
+  label_en   String
+  label_ta   String?
+  order      Int @default(0)
+  is_active  Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model QuickAction {
+  action_id    String @id @default(uuid())
+  title        String
+  description  String
+  icon         String
+  route        String
+  color        String
+  order        Int @default(0)
+  is_active    Boolean @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model ServiceCategory {
+  category_id   String @id @default(uuid())
+  title         String
+  color         String
+  background    String
+  icon          String
+  route         String
+  order         Int @default(0)
+  is_active     Boolean @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }

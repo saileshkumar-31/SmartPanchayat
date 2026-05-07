@@ -6,40 +6,85 @@ import {
   Users,
   Zap,
   Handshake,
+  Heart,
 } from "lucide-react";
 
 import heroImg from "../../assets/about/about.png";
+import { api } from "../../lib/api";
+import { useEffect, useState } from "react";
 
 const AboutUs = () => {
-  const stats = [
-    { number: "250+", label: "Villages" },
-    { number: "12,450+", label: "Happy Citizens" },
-    { number: "8,200+", label: "Applications Processed" },
-    { number: "1,150+", label: "Complaints Resolved" },
-  ];
+  const [stats, setStats] = useState([]);
+  const [values, setValues] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const values = [
-    {
-      icon: ShieldCheck,
-      title: "Transparency",
-      desc: "We believe in open and transparent governance.",
-    },
-    {
-      icon: Users,
-      title: "Accountability",
-      desc: "We are accountable to our citizens.",
-    },
-    {
-      icon: Zap,
-      title: "Efficiency",
-      desc: "We use technology to deliver better services.",
-    },
-    {
-      icon: Handshake,
-      title: "Participation",
-      desc: "We encourage citizen participation and growth.",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch stats
+        const statsRes = await api.get("/panchayat-stats");
+        if (statsRes.data && statsRes.data.length > 0) {
+          setStats(statsRes.data.map(stat => ({
+            number: stat.value,
+            label: stat.label
+          })));
+        }
+
+        // Fetch values
+        const valuesRes = await api.get("/panchayat-values");
+        if (valuesRes.data && valuesRes.data.length > 0) {
+          const iconMap = {
+            "shield-check": ShieldCheck,
+            "users": Users,
+            "zap": Zap,
+            "heart": Heart,
+            "handshake": Handshake,
+          };
+          
+          setValues(valuesRes.data.map(value => ({
+            icon: iconMap[value.icon] || ShieldCheck,
+            title: value.title,
+            desc: value.description
+          })));
+        }
+      } catch (error) {
+        console.error("Error fetching About Us data:", error);
+        // Fallback to static data if API fails
+        setStats([
+          { number: "250+", label: "Villages" },
+          { number: "12,450+", label: "Happy Citizens" },
+          { number: "8,200+", label: "Applications Processed" },
+          { number: "1,150+", label: "Complaints Resolved" },
+        ]);
+        setValues([
+          {
+            icon: ShieldCheck,
+            title: "Transparency",
+            desc: "We believe in open and transparent governance.",
+          },
+          {
+            icon: Users,
+            title: "Accountability",
+            desc: "We are accountable to our citizens.",
+          },
+          {
+            icon: Zap,
+            title: "Efficiency",
+            desc: "We use technology to deliver better services.",
+          },
+          {
+            icon: Handshake,
+            title: "Participation",
+            desc: "We encourage citizen participation and growth.",
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <section className="min-h-screen bg-[#f5f7f4] px-4 sm:px-6 lg:px-8 py-8">

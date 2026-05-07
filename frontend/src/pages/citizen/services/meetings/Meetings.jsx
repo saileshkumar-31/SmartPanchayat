@@ -12,32 +12,62 @@ export default function Meetings() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("scheduled");
   const [meetings, setMeetings] = useState([]);
+  const [tabs, setTabs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const requests = [];
   const notices = [];
   const minutes = [];
 
   useEffect(() => {
-    api.get("/meetings")
-      .then((res) => {
-        setMeetings(
-          res.data.map((item) => ({
-            ...item,
-            date: new Date(item.date).toLocaleDateString(),
-            status: item.status?.toLowerCase() || "upcoming",
-          }))
-        );
-      })
-      .catch(() => setMeetings([]));
-  }, []);
+    const fetchData = async () => {
+      // Static fallback tabs
+      const staticTabs = [
+        { key: "scheduled", label: t("scheduled") },
+        { key: "calendar", label: t("calendar") },
+        { key: "request", label: t("request") },
+      ];
 
-  const tabs = [
-    { key: "scheduled", label: t("scheduled") },
-    { key: "calendar", label: t("calendar") },
-    { key: "request", label: t("request") },
-    { key: "notices", label: t("notices") },
-    { key: "minutes", label: t("summary") },
-  ];
+      try {
+        // Fetch tabs from database
+        const tabsRes = await api.get("/meeting-tabs");
+        if (tabsRes.data && tabsRes.data.length > 0) {
+          setTabs(tabsRes.data.map(tab => ({
+            key: tab.key,
+            label: t(tab.key) || tab.label_en
+          })));
+        } else {
+          setTabs(staticTabs);
+        }
+
+        // Fetch meetings
+        const meetingsRes = await api.get("/meetings");
+        setMeetings(meetingsRes.data || []);
+      } catch (error) {
+        console.error("Error fetching meetings data:", error);
+        // Use static fallback
+        setTabs(staticTabs);
+        setMeetings([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [t]);
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading meetings...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -59,11 +89,13 @@ export default function Meetings() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2 rounded-full text-sm ${
-                activeTab === tab.key
-                  ? "bg-white shadow text-green-700"
-                  : "text-gray-500"
-              }`}
+              className={`
+                px-4 py-2 rounded-full text-sm font-medium transition-all
+                ${activeTab === tab.key
+                  ? "bg-green-600 text-white shadow-md"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                }
+              `}
             >
               {tab.label}
             </button>
@@ -72,26 +104,12 @@ export default function Meetings() {
       </div>
 
       {/* CONTENT */}
-      <div className="bg-white rounded-2xl border shadow-sm p-6 min-h-[300px]">
-        {activeTab === "scheduled" && (
-          <Scheduled meetings={meetings} />
-        )}
-
-        {activeTab === "calendar" && (
-          <Calendar meetings={meetings} />
-        )}
-
-        {activeTab === "request" && (
-          <Request requests={requests} />
-        )}
-
-        {activeTab === "notices" && (
-          <Notices notices={notices} />
-        )}
-
-        {activeTab === "minutes" && (
-          <Minutes minutes={minutes} />
-        )}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {activeTab === "scheduled" && <Scheduled meetings={meetings} />}
+        {activeTab === "calendar" && <Calendar meetings={meetings} />}
+        {activeTab === "request" && <Request />}
+        {activeTab === "notices" && <Notices notices={notices} />}
+        {activeTab === "minutes" && <Minutes minutes={minutes} />}
       </div>
     </div>
   );

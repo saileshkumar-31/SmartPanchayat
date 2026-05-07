@@ -1,3 +1,4 @@
+// Header component - Main navigation header for the Smart Panchayat website
 import  { useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -5,11 +6,17 @@ import logo from "../../assets/header/logo.png";
 import { useTranslation } from "react-i18next";
 
 const Header = () => {
+  // State for mobile menu toggle
   const [openMenu, setOpenMenu] = useState(false);
+  
+  // Navigation hooks
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Translation hook for internationalization
   const { t, i18n } = useTranslation();
 
+  // Navigation links for the header
   const navLinks = [
     { name: t("home"), path: "/" },
     { name: t("services"), path: "/services" },

@@ -1,3 +1,4 @@
+// Required dependencies for the Smart Panchayat backend
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
@@ -6,14 +7,773 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "prisma", ".env") });
 const { PrismaClient } = require("@prisma/client");
 
+// Initialize Express app and Prisma client
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 8010;
+
+// Function to seed the database with initial data
+const seedDatabase = async () => {
+  try {
+    console.log("Starting database seeding...");
+    
+    // Default user credentials for testing
+    const defaultCitizenEmail = "citizen1@example.com";
+    const defaultCitizenMobile = "9000000001";
+    const defaultCitizenPass = "citizen123";
+
+    const defaultAdminEmail = "admin@example.com";
+    const defaultAdminMobile = "9000000000";
+    const defaultAdminPass = "admin123";
+
+    // Create site settings if they don't exist
+    const existingSettings = await prisma.siteSettings.findMany({ take: 1 });
+    if (!existingSettings || existingSettings.length === 0) {
+      console.log("Creating default site settings...");
+      await prisma.siteSettings.create({
+        data: {
+          settings_id: "default",
+          notifications: true,
+          maintenanceMode: false,
+          publicTransparency: true,
+          tamilLanguage: true,
+          citizenRegistration: true,
+          autoApproval: false,
+          restrictionMessage:
+            "Smart Panchayat is temporarily restricted by the administrator.",
+        },
+      });
+    }
+
+    // Create or update default users (admin and citizen)
+    console.log("Creating default users...");
+    // Create default citizen user
+    const citizen = await prisma.userRegistration.upsert({
+      where: { user_email: defaultCitizenEmail },
+      update: {},
+      create: {
+        user_name: "Citizen One",
+        user_mobile: defaultCitizenMobile,
+        user_email: defaultCitizenEmail,
+        user_pass: await bcrypt.hash(defaultCitizenPass, 10),
+        user_panchayat: "Smart Panchayat",
+        user_role: "citizen",
+        user_status: "Active",
+        user_address: "Main Street, Panchayat",
+        user_notes: "Seed user",
+      },
+    });
+
+    // Create default admin user
+    const admin = await prisma.userRegistration.upsert({
+      where: { user_email: defaultAdminEmail },
+      update: {},
+      create: {
+        user_name: "Admin",
+        user_mobile: defaultAdminMobile,
+        user_email: defaultAdminEmail,
+        user_pass: await bcrypt.hash(defaultAdminPass, 10),
+        user_panchayat: "Smart Panchayat",
+        user_role: "admin",
+        user_status: "Active",
+        user_address: "Admin Office, Panchayat",
+        user_notes: "Seed admin user",
+      },
+    });
+
+    // Create sample complaints if none exist
+    console.log("Creating sample complaints...");
+    const complaintCount = await prisma.complaint.count();
+    if (complaintCount === 0) {
+      await prisma.complaint.createMany({
+        data: [
+          {
+            reference_no: "CMP-0001",
+            category: "Sanitation",
+            subject: "Garbage not collected",
+            description: "Garbage is not being collected for weeks.",
+            location: "Ward 1",
+            priority: "Medium",
+            status: "Pending",
+            details: { images: [], gps: null },
+            citizen_id: citizen.user_id,
+          },
+          {
+            reference_no: "CMP-0002",
+            category: "Water Supply",
+            subject: "Low water pressure",
+            description: "Low water pressure in the locality.",
+            location: "Ward 2",
+            priority: "High",
+            status: "Pending",
+            details: { images: [], gps: null },
+            citizen_id: citizen.user_id,
+          },
+        ],
+      });
+    }
+
+    // Meeting + meeting requests
+    const meetingCount = await prisma.meeting.count();
+    if (meetingCount === 0) {
+      await prisma.meeting.createMany({
+        data: [
+          {
+            meeting_id: undefined,
+            title: "Gram Sabha Meeting",
+            description: "Monthly public meeting with citizens",
+            date: new Date(),
+            time: "10:00",
+            venue: "Panchayat Hall",
+            type: "Gram Sabha",
+            agenda: "Project updates and citizen feedback",
+            minutes: "Minutes will be published later",
+            attendees: 50,
+            status: "Upcoming",
+            is_public: true,
+          },
+        ],
+      });
+    }
+
+    const meetingReqCount = await prisma.meetingRequest.count();
+    if (meetingReqCount === 0) {
+      await prisma.meetingRequest.create({
+        data: {
+          title: "Request to attend meeting",
+          description: "Citizen requesting permission to attend.",
+          preferred_date: new Date(),
+          location: "Ward 1",
+          status: "Pending",
+          citizen_id: citizen.user_id,
+        },
+      });
+    }
+
+    // Schemes - Force reseed to ensure all schemes are available
+    await prisma.scheme.deleteMany();
+    console.log("Creating sample schemes...");
+    await prisma.scheme.createMany({
+        data: [
+          {
+            scheme_id: undefined,
+            title: "Housing Scheme",
+            title_ta: "Housing Scheme (TA)",
+            slug: "housing-scheme",
+            category: "Housing",
+            category_ta: "Housing (TA)",
+            description: "Affordable housing support for eligible rural families.",
+            description_ta: "Affordable housing support (TA)",
+            eligibility: "Rural families with annual income below 3 lakhs",
+            eligibility_ta: "Rural families eligibility (TA)",
+            benefits: "Housing construction subsidy up to 2 lakhs",
+            benefits_ta: "Housing benefits (TA)",
+            department: "Housing Department",
+            department_ta: "Housing Department (TA)",
+            amount: "200000",
+            status: "Active",
+          },
+          {
+            scheme_id: undefined,
+            title: "Farmer Welfare",
+            title_ta: "Farmer Welfare (TA)",
+            slug: "farmer-welfare",
+            category: "Agriculture",
+            category_ta: "Agriculture (TA)",
+            description: "Subsidies, irrigation aid, and crop assistance programs.",
+            description_ta: "Farmer assistance programs (TA)",
+            eligibility: "Small and marginal farmers",
+            eligibility_ta: "Farmers eligibility (TA)",
+            benefits: "Irrigation subsidy and crop insurance",
+            benefits_ta: "Farmer benefits (TA)",
+            department: "Agriculture Department",
+            department_ta: "Agriculture Department (TA)",
+            amount: "75000",
+            status: "Active",
+          },
+          {
+            scheme_id: undefined,
+            title: "Education Support",
+            title_ta: "Education Support (TA)",
+            slug: "education-support",
+            category: "Education",
+            category_ta: "Education (TA)",
+            description: "Scholarships and financial help for students.",
+            description_ta: "Student scholarships (TA)",
+            eligibility: "Students from economically weaker sections",
+            eligibility_ta: "Student eligibility (TA)",
+            benefits: "Scholarship up to 25000 per year",
+            benefits_ta: "Education benefits (TA)",
+            department: "Education Department",
+            department_ta: "Education Department (TA)",
+            amount: "25000",
+            status: "Active",
+          },
+          {
+            scheme_id: undefined,
+            title: "Health Insurance",
+            title_ta: "Health Insurance (TA)",
+            slug: "health-insurance",
+            category: "Health",
+            category_ta: "Health (TA)",
+            description: "Medical coverage and emergency treatment benefits.",
+            description_ta: "Medical coverage (TA)",
+            eligibility: "All families below poverty line",
+            eligibility_ta: "Family eligibility (TA)",
+            benefits: "Health insurance coverage up to 5 lakhs",
+            benefits_ta: "Health benefits (TA)",
+            department: "Health Department",
+            department_ta: "Health Department (TA)",
+            amount: "500000",
+            status: "Active",
+          },
+          {
+            scheme_id: undefined,
+            title: "Employment Scheme",
+            title_ta: "Employment Scheme (TA)",
+            slug: "employment-scheme",
+            category: "Employment",
+            category_ta: "Employment (TA)",
+            description: "Local job opportunities and skill development programs.",
+            description_ta: "Job opportunities (TA)",
+            eligibility: "Unemployed youth in rural areas",
+            eligibility_ta: "Youth eligibility (TA)",
+            benefits: "Skill training and job placement",
+            benefits_ta: "Employment benefits (TA)",
+            department: "Labor Department",
+            department_ta: "Labor Department (TA)",
+            amount: "15000",
+            status: "Active",
+          },
+          {
+            scheme_id: undefined,
+            title: "Pension Scheme",
+            title_ta: "Pension Scheme (TA)",
+            slug: "pension-scheme",
+            category: "Social Welfare",
+            category_ta: "Social Welfare (TA)",
+            description: "Monthly pension support for senior citizens.",
+            description_ta: "Senior citizen pension (TA)",
+            eligibility: "Senior citizens above 60 years",
+            eligibility_ta: "Senior eligibility (TA)",
+            benefits: "Monthly pension of 2000 rupees",
+            benefits_ta: "Pension benefits (TA)",
+            department: "Social Welfare Department",
+            department_ta: "Social Welfare Department (TA)",
+            amount: "24000",
+            status: "Active",
+          },
+        ],
+      });
+
+    // Applications + contact messages
+    const appCount = await prisma.application.count();
+    if (appCount === 0) {
+      await prisma.application.createMany({
+        data: [
+          {
+            application_id: undefined,
+            reference_no: "APP-0001",
+            service_type: "Certificate",
+            service_name: "Income Certificate",
+            applicant_name: citizen.user_name,
+            mobile: citizen.user_mobile,
+            email: citizen.user_email,
+            location: "Ward 1",
+            status: "Submitted",
+            remarks: "Seed application",
+            details: { purpose: "Need for subsidy" },
+            citizen_id: citizen.user_id,
+          },
+        ],
+      });
+    }
+
+    const contactCount = await prisma.contactMessage.count();
+    if (contactCount === 0) {
+      await prisma.contactMessage.createMany({
+        data: [
+          {
+            message_id: undefined,
+            name: citizen.user_name,
+            email: citizen.user_email,
+            subject: "Need transparency report",
+            message: "Please share transparency details for ongoing projects.",
+            status: "Unread",
+          },
+        ],
+      });
+    }
+
+    // Transparency tables
+    const tProjCount = await prisma.transparencyProject.count();
+    if (tProjCount === 0) {
+      await prisma.transparencyProject.createMany({
+        data: [
+          {
+            project_id: undefined,
+            title: "Road Improvement (Ward 2)",
+            category: "Ongoing",
+            budget: 1000000,
+            spent: 250000,
+            progress: 25,
+            contractor: "ABC Constructions",
+            location: "Ward 2",
+            start_date: new Date(),
+            end_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+            status: "Ongoing",
+            description: "Improving road quality for better commute.",
+          },
+        ],
+      });
+    }
+
+    const tExpCount = await prisma.transparencyExpense.count();
+    if (tExpCount === 0) {
+      await prisma.transparencyExpense.createMany({
+        data: [
+          {
+            expense_id: undefined,
+            title: "Material Purchase",
+            category: "Road Works",
+            amount: 250000,
+            paid_to: "Materials Supplier",
+            expense_date: new Date(),
+            status: "Published",
+            description: "Purchase of cement and aggregates.",
+          },
+        ],
+      });
+    }
+
+    const tTenderCount = await prisma.transparencyTender.count();
+    if (tTenderCount === 0) {
+      await prisma.transparencyTender.createMany({
+        data: [
+          {
+            tender_id: undefined,
+            title: "Road Works Tender - Phase 1",
+            department: "Panchayat Public Works",
+            budget: 500000,
+            deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            status: "Open",
+            contractor: "TBD",
+            description: "Tender for road improvement works.",
+          },
+        ],
+      });
+    }
+
+    const tBudgetCount = await prisma.transparencyBudget.count();
+    if (tBudgetCount === 0) {
+      await prisma.transparencyBudget.createMany({
+        data: [
+          {
+            budget_id: undefined,
+            title: "Annual Development Budget",
+            category: "General",
+            allocated: 2000000,
+            spent: 500000,
+            year: "2026",
+            status: "Active",
+          },
+        ],
+      });
+    }
+
+    const tUpdateCount = await prisma.transparencyUpdate.count();
+    if (tUpdateCount === 0) {
+      await prisma.transparencyUpdate.createMany({
+        data: [
+          {
+            update_id: undefined,
+            title: "Project Update - Road Improvement",
+            summary: "25% work completed.",
+            details: "Work started and current progress is 25%. Next phase will begin soon.",
+            status: "Published",
+            published_at: new Date(),
+          },
+        ],
+      });
+    }
+
+    const tReportCount = await prisma.transparencyReport.count();
+    if (tReportCount === 0) {
+      await prisma.transparencyReport.createMany({
+        data: [
+          {
+            report_id: undefined,
+            title: "Monthly Report - May 2026",
+            category: "Financial",
+            period: "May 2026",
+            status: "Published",
+            summary: "Monthly financial and project report.",
+          },
+        ],
+      });
+    }
+
+    // Civil Services
+    const civilServiceCount = await prisma.civilService.count();
+    if (civilServiceCount === 0) {
+      await prisma.civilService.createMany({
+        data: [
+          {
+            title: "Water Connection Request",
+            description: "Apply for a new domestic or commercial water connection.",
+            category: "Utilities",
+            process_time: "7-10 days",
+            fee: 500,
+            required_docs: "ID proof, Address proof, Property documents",
+          },
+          {
+            title: "Birth Certificate Request",
+            description: "Official birth certificate registration and issuance.",
+            category: "Certificates",
+            process_time: "3-5 days",
+            fee: 100,
+            required_docs: "Birth proof, Parent ID proof",
+          },
+          {
+            title: "Death Certificate Request", 
+            description: "Official death certificate registration and issuance.",
+            category: "Certificates",
+            process_time: "3-5 days",
+            fee: 100,
+            required_docs: "Death proof, Applicant ID proof",
+          },
+          {
+            title: "Property Tax Information",
+            description: "Get property tax details and payment information.",
+            category: "Taxation",
+            process_time: "1-2 days",
+            fee: 0,
+            required_docs: "Property documents, ID proof",
+          },
+          {
+            title: "Waste Collection Request",
+            description: "Request regular waste collection services.",
+            category: "Sanitation",
+            process_time: "2-3 days",
+            fee: 200,
+            required_docs: "Address proof, ID proof",
+          },
+        ],
+      });
+    }
+
+    // Certificates
+    const certificateCount = await prisma.certificate.count();
+    if (certificateCount === 0) {
+      await prisma.certificate.createMany({
+        data: [
+          {
+            title: "Income Certificate",
+            description: "Official income certificate for various purposes.",
+            category: "Financial",
+            process_time: "5-7 days",
+            fee: 50,
+            required_docs: "Income proof, Address proof, ID proof",
+          },
+          {
+            title: "Community Certificate",
+            description: "Certificate proving community membership.",
+            category: "Social",
+            process_time: "7-10 days", 
+            fee: 100,
+            required_docs: "Community proof, Address proof, ID proof",
+          },
+          {
+            title: "Nativity Certificate",
+            description: "Certificate proving nativity and residence.",
+            category: "Residence",
+            process_time: "5-7 days",
+            fee: 75,
+            required_docs: "Residence proof, Address proof, ID proof",
+          },
+          {
+            title: "Residence Certificate",
+            description: "Official certificate of residence.",
+            category: "Residence", 
+            process_time: "3-5 days",
+            fee: 50,
+            required_docs: "Address proof, ID proof, Utility bills",
+          },
+          {
+            title: "First Graduate Certificate",
+            description: "Certificate for first-time graduates.",
+            category: "Education",
+            process_time: "7-10 days",
+            fee: 150,
+            required_docs: "Degree certificate, Mark sheets, ID proof",
+          },
+          {
+            title: "Marriage Certificate",
+            description: "Official marriage registration certificate.",
+            category: "Social",
+            process_time: "5-7 days",
+            fee: 200,
+            required_docs: "Marriage proof, ID proof, Photos",
+          },
+        ],
+      });
+    }
+
+    // Panchayat Stats
+    const statsCount = await prisma.panchayatStats.count();
+    if (statsCount === 0) {
+      await prisma.panchayatStats.createMany({
+        data: [
+          { metric: "villages", value: "250+", label: "Villages" },
+          { metric: "citizens", value: "12,450+", label: "Happy Citizens" },
+          { metric: "applications", value: "8,200+", label: "Applications Processed" },
+          { metric: "complaints", value: "1,150+", label: "Complaints Resolved" },
+        ],
+      });
+    }
+
+    // Panchayat Values
+    const valuesCount = await prisma.panchayatValue.count();
+    if (valuesCount === 0) {
+      await prisma.panchayatValue.createMany({
+        data: [
+          {
+            title: "Transparency",
+            description: "Open and honest governance with clear communication",
+            icon: "shield-check",
+            order: 1,
+          },
+          {
+            title: "Accountability",
+            description: "Taking responsibility for actions and decisions",
+            icon: "users",
+            order: 2,
+          },
+          {
+            title: "Efficiency",
+            description: "Delivering services promptly and effectively",
+            icon: "zap",
+            order: 3,
+          },
+          {
+            title: "Integrity",
+            description: "Upholding ethical standards in all operations",
+            icon: "heart",
+            order: 4,
+          },
+        ],
+      });
+    }
+
+    // Certificate Requirements and Eligibility
+    const certReqCount = await prisma.certificateRequirement.count();
+    if (certReqCount === 0) {
+      const certificates = await prisma.certificate.findMany();
+      
+      // Income Certificate Requirements
+      await prisma.certificateRequirement.createMany({
+        data: [
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, document_type: "Aadhaar Card", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, document_type: "Ration Card / Family Card", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, document_type: "Address Proof", order: 3 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, document_type: "Income Proof", order: 4 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, document_type: "Passport Size Photograph", order: 5 },
+        ]
+      });
+
+      // Birth Certificate Requirements
+      await prisma.certificateRequirement.createMany({
+        data: [
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, document_type: "Hospital Birth Record / Birth Report", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, document_type: "Child Name Details (if naming completed)", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, document_type: "Parents Aadhaar Cards", order: 3 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, document_type: "Address Proof", order: 4 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, document_type: "Birth Registration Form", order: 5 },
+        ]
+      });
+
+      // Death Certificate Requirements
+      await prisma.certificateRequirement.createMany({
+        data: [
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, document_type: "Hospital Death Report / Medical Certificate of Cause of Death", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, document_type: "Deceased Person Aadhaar Card (if available)", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, document_type: "Applicant Aadhaar Card", order: 3 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, document_type: "Address Proof", order: 4 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, document_type: "Delayed Registration Affidavit (if applicable)", order: 5 },
+        ]
+      });
+    }
+
+    // Certificate Eligibility
+    const certEligCount = await prisma.certificateEligibility.count();
+    if (certEligCount === 0) {
+      const certificates = await prisma.certificate.findMany();
+      
+      await prisma.certificateEligibility.createMany({
+        data: [
+          // Income Certificate Eligibility
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, requirement: "Applicant should be a resident of the state.", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, requirement: "Income details must be accurate and verifiable.", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Income Certificate")?.certificate_id, requirement: "Required supporting documents must be submitted.", order: 3 },
+          
+          // Birth Certificate Eligibility
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, requirement: "Birth should be registered as per applicable registration rules.", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, requirement: "Applicant should be parent / guardian / authorized person.", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Birth Certificate Request")?.certificate_id, requirement: "Supporting records should match birth details submitted.", order: 3 },
+          
+          // Death Certificate Eligibility
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, requirement: "Death should be registered as per applicable registration rules.", order: 1 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, requirement: "Applicant should be family member, legal representative, or authorized person.", order: 2 },
+          { certificate_id: certificates.find(c => c.title === "Death Certificate Request")?.certificate_id, requirement: "Submitted records should match official death details.", order: 3 },
+        ]
+      });
+    }
+
+    // Meeting Tabs
+    const meetingTabCount = await prisma.meetingTab.count();
+    if (meetingTabCount === 0) {
+      await prisma.meetingTab.createMany({
+        data: [
+          { key: "scheduled", label_en: "Scheduled", label_ta: "திட்டமிடப்பட்டது", order: 1 },
+          { key: "calendar", label_en: "Calendar", label_ta: "நாட்காட்டி", order: 2 },
+          { key: "request", label_en: "Request", label_ta: "கோரிக்கை", order: 3 },
+        ]
+      });
+    }
+
+    // Quick Actions
+    const quickActionCount = await prisma.quickAction.count();
+    if (quickActionCount === 0) {
+      await prisma.quickAction.createMany({
+        data: [
+          {
+            title: "Apply for Certificate",
+            description: "Apply for various certificates",
+            icon: "FileText",
+            route: "/certificates",
+            color: "bg-blue-100 text-blue-700",
+            order: 1,
+          },
+          {
+            title: "File Complaint",
+            description: "Report issues and grievances",
+            icon: "AlertTriangle",
+            route: "/complaints",
+            color: "bg-red-100 text-red-700",
+            order: 2,
+          },
+          {
+            title: "View Schemes",
+            description: "Browse government schemes",
+            icon: "Award",
+            route: "/schemes",
+            color: "bg-purple-100 text-purple-700",
+            order: 3,
+          },
+          {
+            title: "Track Application",
+            description: "Check application status",
+            icon: "Search",
+            route: "/applicationtracker",
+            color: "bg-green-100 text-green-700",
+            order: 4,
+          },
+          {
+            title: "Attend Meeting",
+            description: "Join public meetings",
+            icon: "Calendar",
+            route: "/Meetings",
+            color: "bg-amber-100 text-amber-700",
+            order: 5,
+          },
+          {
+            title: "Contact Support",
+            description: "Get help and support",
+            icon: "MessageSquare",
+            route: "/contact",
+            color: "bg-teal-100 text-teal-700",
+            order: 6,
+          },
+        ]
+      });
+    }
+
+    // Service Categories
+    const serviceCategoryCount = await prisma.serviceCategory.count();
+    if (serviceCategoryCount === 0) {
+      await prisma.serviceCategory.createMany({
+        data: [
+          {
+            title: "Certificates",
+            color: "text-green-700",
+            background: "bg-green-100",
+            icon: "FileCheck",
+            route: "/certificates",
+            order: 1,
+          },
+          {
+            title: "Complaints & Grievances",
+            color: "text-red-700",
+            background: "bg-red-100",
+            icon: "AlertTriangle",
+            route: "/complaints",
+            order: 2,
+          },
+          {
+            title: "Civic Services",
+            color: "text-blue-700",
+            background: "bg-blue-100",
+            icon: "Building2",
+            route: "/civil-services",
+            order: 3,
+          },
+          {
+            title: "Meetings & Participation",
+            color: "text-purple-700",
+            background: "bg-purple-100",
+            icon: "Calendar",
+            route: "/Meetings",
+            order: 4,
+          },
+          {
+            title: "Transparency",
+            color: "text-amber-700",
+            background: "bg-amber-100",
+            icon: "Eye",
+            route: "/transparency",
+            order: 5,
+          },
+        ]
+      });
+    }
+
+    console.log("✅ Database seeded successfully");
+  } catch (error) {
+    console.error("❌ Error seeding database:", error);
+  }
+};
+
 const JWT_SECRET = process.env.JWT_SECRET || "smartpanchayat-dev-secret-change-before-deploy";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
-const corsOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173")
-  .split(",")
-  .map((origin) => origin.trim());
+const defaultCorsOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
+const corsOrigins = Array.from(
+  new Set(
+    [
+      ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : []),
+      ...defaultCorsOrigins,
+    ]
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  )
+);
+
+console.log("CORS Origins loaded:", corsOrigins);
 
 app.disable("x-powered-by");
 app.use((req, res, next) => {
@@ -24,10 +784,19 @@ app.use((req, res, next) => {
 });
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || corsOrigins.includes(origin)) return callback(null, true);
+    if (!origin) return callback(null, true);
+    if (corsOrigins.includes(origin)) return callback(null, true);
     return callback(new Error("Not allowed by CORS"));
   },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+/* Ensure preflight (OPTIONS) always gets the CORS headers.
+   Express 5 route matcher doesn't accept '*' as a path parameter. */
+app.options(/.*/, cors());
+
 app.use(express.json({ limit: "2mb" }));
 
 const asyncHandler = (handler) => async (req, res, next) => {
@@ -578,6 +1347,15 @@ const idField = (model) => ({
   transparencyBudget: "budget_id",
   transparencyUpdate: "update_id",
   transparencyReport: "report_id",
+  civilService: "service_id",
+  certificate: "certificate_id",
+  panchayatStats: "stats_id",
+  panchayatValue: "value_id",
+  certificateRequirement: "requirement_id",
+  certificateEligibility: "eligibility_id",
+  meetingTab: "tab_id",
+  quickAction: "action_id",
+  serviceCategory: "category_id",
 }[model]);
 
 crud("meetings", "meeting", (body) => ({
@@ -674,15 +1452,123 @@ crud("transparency/updates", "transparencyUpdate", (body) => ({
 
 crud("transparency/reports", "transparencyReport", (body) => ({
   title: body.title,
-  category: body.category || "General",
+  category: body.category,
   period: body.period,
   file_url: body.file_url,
   status: body.status,
-  summary: body.summary || body.description,
+  summary: body.summary,
 }), { created_at: "desc" }, { adminOnly: true });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+crud("civil-services", "civilService", (body) => ({
+  title: body.title,
+  description: body.description,
+  category: body.category,
+  process_time: body.process_time,
+  fee: toFloat(body.fee),
+  required_docs: body.required_docs,
+  status: body.status,
+}), { created_at: "desc" }, { adminOnly: true });
+
+crud("certificates", "certificate", (body) => ({
+  title: body.title,
+  description: body.description,
+  category: body.category,
+  process_time: body.process_time,
+  fee: toFloat(body.fee),
+  required_docs: body.required_docs,
+  status: body.status,
+}), { created_at: "desc" }, { adminOnly: true });
+
+crud("panchayat-stats", "panchayatStats", (body) => ({
+  metric: body.metric,
+  value: body.value,
+  label: body.label,
+}), { updated_at: "desc" }, { adminOnly: true });
+
+crud("panchayat-values", "panchayatValue", (body) => ({
+  title: body.title,
+  description: body.description,
+  icon: body.icon,
+  order: toInt(body.order),
+}), { order: "asc" }, { adminOnly: true });
+
+// Certificate Requirements CRUD (nested)
+app.get("/api/certificates/:id/requirements", asyncHandler(async (req, res) => {
+  const requirements = await prisma.certificateRequirement.findMany({
+    where: { certificate_id: req.params.id },
+    orderBy: { order: "asc" }
+  });
+  res.json({ data: requirements });
+}));
+
+app.post("/api/certificates/:id/requirements", authenticate, requireAdmin, asyncHandler(async (req, res) => {
+  const requirement = await prisma.certificateRequirement.create({
+    data: {
+      certificate_id: req.params.id,
+      document_type: req.body.document_type,
+      is_required: req.body.is_required !== false,
+      order: toInt(req.body.order) || 0
+    }
+  });
+  res.status(201).json({ message: "Requirement created", data: requirement });
+}));
+
+// Certificate Eligibility CRUD (nested)
+app.get("/api/certificates/:id/eligibility", asyncHandler(async (req, res) => {
+  const eligibility = await prisma.certificateEligibility.findMany({
+    where: { certificate_id: req.params.id },
+    orderBy: { order: "asc" }
+  });
+  res.json({ data: eligibility });
+}));
+
+app.post("/api/certificates/:id/eligibility", authenticate, requireAdmin, asyncHandler(async (req, res) => {
+  const eligibility = await prisma.certificateEligibility.create({
+    data: {
+      certificate_id: req.params.id,
+      requirement: req.body.requirement,
+      order: toInt(req.body.order) || 0
+    }
+  });
+  res.status(201).json({ message: "Eligibility created", data: eligibility });
+}));
+
+// Meeting Tabs CRUD
+crud("meeting-tabs", "meetingTab", (body) => ({
+  key: body.key,
+  label_en: body.label_en,
+  label_ta: body.label_ta,
+  order: toInt(body.order) || 0,
+  is_active: body.is_active !== false,
+}), { order: "asc" }, { adminOnly: true });
+
+// Quick Actions CRUD
+crud("quick-actions", "quickAction", (body) => ({
+  title: body.title,
+  description: body.description,
+  icon: body.icon,
+  route: body.route,
+  color: body.color,
+  order: toInt(body.order) || 0,
+  is_active: body.is_active !== false,
+}), { order: "asc" }, { adminOnly: true });
+
+// Service Categories CRUD
+crud("service-categories", "serviceCategory", (body) => ({
+  title: body.title,
+  color: body.color,
+  background: body.background,
+  icon: body.icon,
+  route: body.route,
+  order: toInt(body.order) || 0,
+  is_active: body.is_active !== false,
+}), { order: "asc" }, { adminOnly: true });
+
+// Seed the database with initial data before starting the server
+seedDatabase().finally(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
 
 // Keeps some local runners from treating the process as finished immediately.

@@ -8,8 +8,8 @@ export default function RestrictedGate({ children }) {
   const location = useLocation();
   const user = getCurrentUser();
   const isAdminArea =
-    location.pathname.startsWith("/admin");
-  const isAdminLogin = location.pathname === "/adminLogin";
+    location.pathname.startsWith("/admin/");
+  const isAdminLogin = location.pathname === "/admin" || location.pathname === "/adminLogin";
   const publicPaths = [
     "/",
     "/citizen",
@@ -34,7 +34,17 @@ export default function RestrictedGate({ children }) {
       .catch(() => setSettings({ maintenanceMode: false }));
   }, []);
 
-  if (!settings) return children;
+  if (!settings) {
+    // Show loading spinner while fetching settings
+    return (
+      <main className="min-h-screen bg-[#f5f7f4] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Smart Panchayat...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (settings.maintenanceMode && !isAdminArea && !isAdminLogin) {
     return (

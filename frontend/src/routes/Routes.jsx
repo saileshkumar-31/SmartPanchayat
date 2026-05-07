@@ -1,39 +1,58 @@
+// React Router setup for the Smart Panchayat application
 import { createBrowserRouter } from "react-router-dom";
+import { Suspense, lazy } from "react";
 
+// Layout components
 import App from "../layout/App.jsx";
 import InnerLayout from "../layout/InnerLayout.jsx";
 
-import CitizenLogin from "../pages/auth/CitizenLogin.jsx";
-import CitizenRegister from "../pages/auth/CitizenRegister.jsx";
+// Helper function to wrap lazy loaded components with Suspense
+const withSuspense = (Element) => (
+  <Suspense fallback={<div style={{ padding: 16 }}>Loading...</div>}>
+    {Element}
+  </Suspense>
+);
 
+// Lazy loaded components for better performance
+const CitizenLogin = lazy(() => import("../pages/auth/CitizenLogin.jsx"));
+const CitizenDashboard = lazy(() => import("../pages/citizen/CitizenDashboard.jsx"));
+const Meetings = lazy(() => import("../pages/citizen/services/meetings/Meetings.jsx"));
+const Complaints = lazy(() => import("../pages/citizen/Complaints/Complaints.jsx"));
+const Transparency = lazy(() => import("../pages/transparency/TransparencyDashboard.jsx"));
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard.jsx"));
+
+// Regular imports for smaller components
+import CitizenRegister from "../pages/auth/CitizenRegister.jsx";
 import AdminLogin from "../pages/auth/AdminLogin.jsx";
 import ForgotPassword from "../pages/auth/ForgotPassword.jsx";
 
+// Registration step components
 import Step1Personal from "../components/register/Step1Personal.jsx";
 import Step2Panchayat from "../components/register/Step2Panchayat.jsx";
 import Step3Verification from "../components/register/Step3Verification.jsx";
 import Step4Success from "../components/register/Step4Success.jsx";
+
+// Public pages
 import AboutUs from "../pages/public/AboutUs.jsx";
 import Services from "../pages/citizen/services/Services.jsx";
 import Schemes from "../pages/public/Schemes.jsx";
+import ContactUs from "../pages/public/ContactUs.jsx";
+
+// Certificate pages
 import Certificates from "../pages/citizen/services/certificate/Certificates.jsx";
 import IncomeCertificate from "../pages/citizen/services/certificate/IncomeCertificate.jsx";
 
 import JobOpportunities from "../pages/citizen/services/JobOpportunities.jsx";
-
-import Meetings from "../pages/citizen/services/meetings/Meetings.jsx";
-import ContactUs from "../pages/public/ContactUs.jsx";
 import CivilServices from "../pages/citizen/services/civilservices/CivilServices.jsx";
 
 import CommunityCertificate from "../pages/citizen/services/certificate/Communitycertificate.jsx";
 import NativityCertificate from "../pages/citizen/services/certificate/Navtivitycertificate.jsx";
 import ResidenceCertificate from "../pages/citizen/services/certificate/Residencecertificate.jsx";
 import FirstGraduateCertificate from "../pages/citizen/services/certificate/Firstgraduatecertificate.jsx";
-import Birthcertificate from "../pages/citizen/services/certificate/Birthcertificate.jsx"
+import Birthcertificate from "../pages/citizen/services/certificate/Birthcertificate.jsx";
 import DeathCertificate from "../pages/citizen/services/certificate/Deathcertificate.jsx";
 import MarriageCertificate from "../pages/citizen/services/certificate/Marriageceretificate.jsx";
 import ApplicationTracker from "../pages/citizen/services/ApplicationTracker.jsx";
-import Complaints from "../pages/citizen/Complaints/Complaints.jsx";
 import Streetlight from "../pages/citizen/Complaints/Streetlight.jsx";
 import WaterSupply from "../pages/citizen/Complaints/WaterSupply.jsx";
 import Garbage from "../pages/citizen/Complaints/Garbage.jsx";
@@ -48,7 +67,6 @@ import WasteCollection from "../pages/citizen/services/civilservices/WasteCollec
 import BuildingPermission from "../pages/citizen/services/civilservices/BuildingPermission.jsx";
 import TradeLicense from "../pages/citizen/services/civilservices/TradeLicense.jsx";
 import NoObjection from "../pages/citizen/services/civilservices/NoObjection.jsx";
-import Transparency from "../pages/transparency/TransparencyDashboard.jsx";
 import Funds from "../pages/transparency/Funds.jsx";
 import Reports from "../pages/transparency/Reports.jsx";
 import Ongoing from "../pages/transparency/Ongoing.jsx";
@@ -69,7 +87,6 @@ import EducationSupport from "../pages/public/schemes/EducationSupport.jsx";
 import HealthInsurance from "../pages/public/schemes/HealthInsurance.jsx";
 import EmploymentScheme from "../pages/public/schemes/EmploymentScheme.jsx";
 import PensionScheme from "../pages/public/schemes/PensionScheme.jsx";
-import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import ApplicationsManagement from "../pages/admin/ApplicationsManagement.jsx";
 import ComplaintsManagement from "../pages/admin/ComplaintsManagement.jsx";
 import UsersManagement from "../pages/admin/users/UsersManagement.jsx";
@@ -91,9 +108,9 @@ import AddOngoingProject from "../pages/admin/transparency/ongoing/AddOngoingPro
 import EditOngoingProject from "../pages/admin/transparency/ongoing/EditOngoingProject.jsx";
 import EditTender from "../pages/admin/transparency/tender/EditTender.jsx";
 import CreateTender from "../pages/admin/transparency/tender/CreateTender.jsx";
-import AddExpenses from "../pages/admin/transparency/expenses/AddExpenses.jsx"
+import AddExpenses from "../pages/admin/transparency/expenses/AddExpenses.jsx";
 import EditExpense from "../pages/admin/transparency/expenses/EditExpenses.jsx";
-import AddRecentUpdates from "../pages/admin/transparency/recentupdates/AddRecentUpdates.jsx"
+import AddRecentUpdates from "../pages/admin/transparency/recentupdates/AddRecentUpdates.jsx";
 import EditRecentUpdate from "../pages/admin/transparency/recentupdates/EditRecentUpdates.jsx";
 import MeetingsDashboard from "../pages/admin/meetings/MeetingsManagement.jsx";
 import MeetingRequests from "../pages/admin/meetings/MeetingsRequest.jsx";
@@ -101,9 +118,9 @@ import MeetingSchedule from "../pages/admin/meetings/MeetingsScheduled.jsx";
 import AddMeeting from "../pages/admin/meetings/Addmeeting.jsx";
 import EditMeeting from "../pages/admin/meetings/Editmeeting.jsx";
 import TransparencyReports from "../pages/admin/reports/TransparencyReports.jsx";
-import AddTransparencyReport from "../pages/admin/reports/AddTransparencyReport.jsx"
+import AddTransparencyReport from "../pages/admin/reports/AddTransparencyReport.jsx";
 import EditTransparencyReport from "../pages/admin/reports/EditTransparencyReport.jsx";
-import AddUsers from "../pages/admin/users/AddUsers.jsx"
+import AddUsers from "../pages/admin/users/AddUsers.jsx";
 import EditUser from "../pages/admin/users/EditUser.jsx";
 import MeetingCalendarView from "../pages/admin/meetings/MeetingCalendar.jsx";
 
@@ -121,7 +138,11 @@ const Routes = createBrowserRouter([
     children: [
       {
         path: "citizen",
-        element: <CitizenLogin />,
+        element: withSuspense(<CitizenLogin />),
+      },
+      {
+        path: "citizen/dashboard",
+        element: withSuspense(<CitizenDashboard />),
       },
 
       {
@@ -214,7 +235,7 @@ const Routes = createBrowserRouter([
       },
       {
         path: "complaints",
-        element: <Complaints />,
+        element: withSuspense(<Complaints />),
       },
       {
         path: "complaints/streetlight",
@@ -250,7 +271,7 @@ const Routes = createBrowserRouter([
       },
       {
         path: "Meetings",
-        element: <Meetings/>,
+        element: withSuspense(<Meetings />),
       },
       {
         path: "civilservices",
@@ -364,11 +385,11 @@ const Routes = createBrowserRouter([
       },
       {
         path: "admin/dashboard",
-        element: <AdminDashboard />,
+        element: withSuspense(<AdminDashboard />),
       },
       {
-        path: "admin/application-management",
-        element: <ApplicationsManagement />,
+        path: "transparency",
+        element: withSuspense(<Transparency />),
       },
       {
         path: "admin/complaints-management",

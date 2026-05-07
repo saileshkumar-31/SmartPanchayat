@@ -11,30 +11,78 @@ import {
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { api } from "../../../../lib/api";
 
 const IncomeCertificate = () => {
   const navigate = useNavigate();
+  const [documents, setDocuments] = useState([]);
+  const [eligibility, setEligibility] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const documents = [
-    "Aadhaar Card",
-    "Ration Card / Family Card",
-    "Address Proof",
-    "Salary Slip / Income Proof",
-    "Self Declaration",
-    "Passport Size Photograph",
-  ];
+  useEffect(() => {
+    const fetchCertificateData = async () => {
+      // Static fallback data
+      const staticDocuments = [
+        "Aadhaar Card",
+        "Ration Card / Family Card",
+        "Address Proof",
+        "Income Proof",
+        "Passport Size Photograph",
+      ];
 
-  const eligibility = [
-    "Applicant should be a resident of the state.",
-    "Income details must be accurate and verifiable.",
-    "Required supporting documents must be submitted.",
-  ];
+      const staticEligibility = [
+        "Applicant should be a resident of the state.",
+        "Income details must be accurate and verifiable.",
+        "Required supporting documents must be submitted.",
+      ];
+
+      try {
+        // Get all certificates to find the Income Certificate
+        const certificatesRes = await api.get("/certificates");
+        const incomeCert = certificatesRes.data.find(cert => cert.title === "Income Certificate");
+        
+        if (incomeCert) {
+          // Fetch requirements
+          const reqRes = await api.get(`/certificates/${incomeCert.certificate_id}/requirements`);
+          if (reqRes.data && reqRes.data.length > 0) {
+            setDocuments(reqRes.data.map(req => req.document_type));
+          } else {
+            setDocuments(staticDocuments);
+          }
+
+          // Fetch eligibility
+          const eligRes = await api.get(`/certificates/${incomeCert.certificate_id}/eligibility`);
+          if (eligRes.data && eligRes.data.length > 0) {
+            setEligibility(eligRes.data.map(elig => elig.requirement));
+          } else {
+            setEligibility(staticEligibility);
+          }
+        } else {
+          // Use static fallback if certificate not found
+          setDocuments(staticDocuments);
+          setEligibility(staticEligibility);
+        }
+      } catch (error) {
+        console.error("Error fetching certificate data:", error);
+        // Use static fallback
+        setDocuments(staticDocuments);
+        setEligibility(staticEligibility);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCertificateData();
+  }, []);
 
   const openOfficialPortal = () => {
     window.open("https://www.tnesevai.tn.gov.in/", "_blank");
   };
 
-  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <section className="min-h-screen bg-[#f6f8f6] px-4 sm:px-6 lg:px-8 py-8">
